@@ -24,4 +24,5 @@
             public const string ChangePassword = "change-password";
             public const string ForgotPassword = "forgot-password";
         }
+    }
 }
