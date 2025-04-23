@@ -1,0 +1,6 @@
+@TellMe.API_HostAddress = http://localhost:5285
+
+GET {{TellMe.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

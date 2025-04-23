@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TellMe Email Verification</title>
+</head>
+<body style="font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f4f7f4; color: #333;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width: 100%; background-color: #f4f7f4;">
+        <tr>
+            <td align="center" valign="top" style="padding: 40px 20px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td style="padding: 20px 15px; text-align: left; background-color: #afedaf; border-radius: 8px 8px 0 0;">
+                            <img src="cid:Logo_TellMe" alt="TellMe Logo" width="150" style="max-width: 80%; height: auto;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #ffffff; padding: 40px 30px; text-align: left;">
+                            <h2 style="color: #2E7D32; margin-top: 0; margin-bottom: 20px; font-size: 24px; font-weight: bold;">Verify Your Email Address</h2>
+                            <p style="color: #333; font-size: 16px; margin-bottom: 20px; line-height: 1.5;">Dear @Model.FullName,</p>
+                            <p style="color: #333; font-size: 16px; margin-bottom: 20px; line-height: 1.5;">Thank you for choosing TellMe. To start sending emails, please verify your single sender status by clicking the button below:</p>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 30px; font-style: italic;">This verification link is active for 48 hours. After that, you'll need to request a new confirmation email.</p>
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <a href="@Model.ConfirmationLink" style="background-color: #afedaf; color: white; padding: 12px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 16px; text-decoration: none; display: inline-block; font-weight: bold; transition: background-color 0.3s ease;">Confirm Email</a>
+                            </div>
+                            <p style="color: #333; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">If you didn't create an account with TellMe, please disregard this email.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 30px; font-size: 14px; color: #666; text-align: center; background-color: #f0f7f0; border-radius: 0 0 8px 8px;">
+                            <img src="cid:Logo_TellMe" alt="TellMe" width="100" style="margin-bottom: 10px; max-width: 100%; height: auto;">
+                            <p style="margin: 5px 0; font-weight: bold; color: #2E7D32;">Send with Confidence</p>
+                            <p style="margin: 10px 0;">� 2025 TellMe, FPT University, Ho Chi Minh City</p>
+                            <p style="margin: 20px 0;">
+                                <a href="#" style="color: #2E7D32; text-decoration: none; margin: 0 10px; font-weight: bold;">Blog</a>
+                                <a href="#" style="color: #2E7D32; text-decoration: none; margin: 0 10px; font-weight: bold;">GitHub</a>
+                                <a href="#" style="color: #2E7D32; text-decoration: none; margin: 0 10px; font-weight: bold;">Twitter</a>
+                                <a href="#" style="color: #2E7D32; text-decoration: none; margin: 0 10px; font-weight: bold;">Facebook</a>
+                                <a href="#" style="color: #2E7D32; text-decoration: none; margin: 0 10px; font-weight: bold;">LinkedIn</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
