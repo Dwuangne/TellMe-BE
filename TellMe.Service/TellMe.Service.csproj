@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Assets\Logos\" />
     <Folder Include="Profiles\" />
   </ItemGroup>
 
@@ -20,13 +21,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Templates\Emails\ConfirmedEmail.html">
+    <None Update="Assets\Logos\TellMe.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\Emails\ConfirmedEmailFailure.html">
+    <None Update="Templates\Emails\Confirmed.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\Emails\ConfirmedEmailSuccess.html">
+    <None Update="Templates\Emails\ConfirmedFailure.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Emails\ConfirmedSuccess.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Emails\ForgotPassword.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

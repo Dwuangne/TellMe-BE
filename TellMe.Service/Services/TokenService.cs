@@ -34,7 +34,7 @@ namespace TellMe.Service.Services
 
                 if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience))
                 {
-                    throw new InvalidOperationException(MessageConstant.JWTMessage.InvalidOperationJWT);
+                    throw new InvalidOperationException(MessageConstant.Authentication.Jwt.InvalidConfiguration);
                 }
 
                 // Create security key and signing credentials
@@ -53,7 +53,7 @@ namespace TellMe.Service.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to generate JWT token: {ex.Message}", ex);
+                throw new Exception(ex.Message);
             }
         }
 
@@ -79,7 +79,7 @@ namespace TellMe.Service.Services
                 var jwtKey = _configuration["JwtAuth:Key"];
                 if (string.IsNullOrEmpty(jwtKey))
                 {
-                    throw new InvalidOperationException(MessageConstant.JWTMessage.InvalidOperationJWT);
+                    throw new InvalidOperationException(MessageConstant.Authentication.Jwt.InvalidConfiguration);
                 }
                 var tokenValidationParameters = new TokenValidationParameters
                 {
@@ -101,7 +101,7 @@ namespace TellMe.Service.Services
                     return principal;
                 }
 
-                throw new SecurityTokenException("Token không hợp lệ.");
+                throw new SecurityTokenException(MessageConstant.Authentication.RefreshToken.InvalidToken);
             }
             catch (Exception ex)
             {

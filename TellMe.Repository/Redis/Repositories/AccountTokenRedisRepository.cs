@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TellMe.Repository.Redis.Models;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
+using Azure.Messaging;
 
 namespace TellMe.Repository.Redis.Repositories
 {
@@ -19,7 +20,9 @@ namespace TellMe.Repository.Redis.Repositories
         {
             var redisConnectionString = configuration["Redis:ConnectionString"]
                 ?? throw new InvalidOperationException("Redis connection string is not configured.");
+
             _redisConnectionProvider = new RedisConnectionProvider(redisConnectionString);
+            _redisConnectionProvider.Connection.CreateIndex(typeof(AccountToken));
             _accounttokenCollection = _redisConnectionProvider.RedisCollection<AccountToken>();
         }
 

@@ -10,5 +10,6 @@ namespace TellMe.Service.Services.Interface
     public interface IEmailService
     {
         Task SendConfirmationEmailAsync(ConfirmEmailRequest request);
+        Task SendForgotPasswordEmailAsync(ForgotPasswordEmailRequest request);
     }
 }
