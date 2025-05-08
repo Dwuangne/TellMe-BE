@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Email Confirmation Failed</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --primary-color: #0f766e;
+            --secondary-color: #eefffb;
+            --text-color: #1e293b;
+            --error-color: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--secondary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .error-icon {
+            color: var(--error-color);
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: var(--error-color);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+
+        ul {
+            text-align: left;
+            margin: 0 auto 2rem;
+            max-width: 90%;
+            font-size: 15px;
+            color: #1e293b;
+            list-style-type: none;
+        }
+
+            ul li {
+                position: relative;
+                padding-left: 1.5rem;
+                margin-bottom: 0.75rem;
+            }
+
+                ul li::before {
+                    content: '•';
+                    color: var(--primary-color);
+                    position: absolute;
+                    left: 0;
+                    font-size: 1.2rem;
+                }
+
+        .button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+            .button:hover {
+                background-color: #115e59;
+            }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+                width: 95%;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            p, ul {
+                font-size: 14px;
+            }
+
+            .button {
+                padding: 10px 24px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-icon">⚠</div>
+        <h2>Email Confirmation Failed</h2>
+        <p>We couldn't verify your email address. This may be due to an expired or invalid confirmation link.</p>
+        <p>Please try the following steps:</p>
+        <ul>
+            <li>Check if you're using the latest confirmation link sent to your email.</li>
+            <li>Click the link directly from your email instead of copying and pasting.</li>
+            <li>Request a new confirmation email from our website if the issue persists.</li>
+        </ul>
+        <!--<a href="/resend-confirmation" class="button">Request New Link</a>-->
+    </div>
+</body>
+</html>

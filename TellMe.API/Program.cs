@@ -1,9 +1,6 @@
 ﻿using DotNetEnv;
-using Microsoft.Extensions.Logging;
 using TellMe.API.Constants;
-
 using TellMe.API.Extensions;
-using TellMe.Repository.SMTPs.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,10 +10,11 @@ builder.Configuration.AddEnvironmentVariables();
 // Configure logging
 builder.Services.AddLogging(logging =>
 {
-    logging.AddConsole(); // Log to console
-    logging.AddDebug();   // Log to debug output
+    logging.ClearProviders(); // Xóa các provider mặc định nếu có
+    logging.AddConsole();
+    logging.AddDebug();
+    logging.SetMinimumLevel(LogLevel.Warning); // Chỉ log Warning trở lên
 });
-
 
 // Add services to the container.
 builder.Services.AddControllers();

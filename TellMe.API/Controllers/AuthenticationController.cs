@@ -51,7 +51,7 @@ namespace TellMe.API.Controllers
             return Ok(new
             {
                 success = result,
-                message = TellMe.API.Constants.MessageConstant.AuthenticationMessage.RegisterAccountSuccess,
+                message = TellMe.API.Constants.MessageConstant.Authentication.RegisterAccountSuccess,
             });
         }
 

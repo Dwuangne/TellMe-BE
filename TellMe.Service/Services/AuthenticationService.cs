@@ -69,7 +69,7 @@ namespace TellMe.Service.Services
                     {
                         // Handle update failure (optional)
                         var errors = string.Join(", ", updateResult.Errors.Select(e => e.Description));
-                        throw new Exception($"Failed to unlock user: {errors}");
+                        throw new Exception(errors);
                     }
 
                     return true;
@@ -90,16 +90,16 @@ namespace TellMe.Service.Services
                 var user = await _userManager.FindByEmailAsync(loginRequest.Email);
                 if (user == null)
                 {
-                    throw new NotFoundException(MessageConstant.LoginMessage.NotExistEmail);
+                    throw new NotFoundException(MessageConstant.Authentication.Login.EmailNotFound);
                 } else if (!await _userManager.IsEmailConfirmedAsync(user))
                 {
-                    throw new BadRequestException(MessageConstant.LoginMessage.NotVerifyEmail);
+                    throw new BadRequestException(MessageConstant.Authentication.Login.EmailNotVerified);
                 }else if (user.LockoutEnabled)
                 {
-                    throw new BadRequestException(MessageConstant.LoginMessage.DisabledAccount);
+                    throw new BadRequestException(MessageConstant.Authentication.Login.AccountDisabled);
                 }else if (!await _userManager.CheckPasswordAsync(user, loginRequest.Password))
                 {
-                    throw new BadRequestException(MessageConstant.LoginMessage.InvalidEmailOrPassword);
+                    throw new BadRequestException(MessageConstant.Authentication.Login.InvalidCredentials);
                 }
 
                 var roles = await _userManager.GetRolesAsync(user) ?? new List<string>();
@@ -181,13 +181,13 @@ namespace TellMe.Service.Services
                     if (!createResult.Succeeded)
                     {
                         var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
-                        throw new BadRequestException($"User creation failed: {errors}");
+                        throw new BadRequestException(errors);
                     }
                     createResult = await _userManager.AddToRoleAsync(newUser, "User");
                     if (!createResult.Succeeded)
                     {
                         var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
-                        throw new BadRequestException($"Failed to add roles: {errors}");
+                        throw new BadRequestException(errors);
                     }
                     user = newUser;
                 }
@@ -195,7 +195,7 @@ namespace TellMe.Service.Services
                 {
                     if (user.PasswordHash != null)
                     {
-                        throw new BadRequestException(MessageConstant.RegisterMessage.AlreadyExistAccount);
+                        throw new BadRequestException(MessageConstant.Authentication.Register.EmailExists);
                     }
                 }
                 var roles = await _userManager.GetRolesAsync(user) ?? new List<string>();
@@ -253,7 +253,7 @@ namespace TellMe.Service.Services
                 var principal = _tokenService.GetPrincipalFromExpiredToken(tokenRequest.AccessToken);
                 if (principal == null)
                 {
-                    throw new BadRequestException("Token không hợp lệ.");
+                    throw new BadRequestException(MessageConstant.Authentication.RefreshToken.InvalidToken);
                 }
 
                 var userId = principal.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
@@ -261,21 +261,21 @@ namespace TellMe.Service.Services
 
                 if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(jwtId))
                 {
-                    throw new BadRequestException("Thông tin token không hợp lệ.");
+                    throw new BadRequestException(MessageConstant.Authentication.RefreshToken.InvalidToken);
                 }
 
                 // Bước 2: Kiểm tra token trong Redis
                 var storedToken = await _redisService.GetAccountTokenAsync(userId);
                 if (storedToken == null || storedToken.RefreshToken != tokenRequest.RefreshToken || storedToken.JWTId != jwtId)
                 {
-                    throw new BadRequestException("Refresh token không hợp lệ hoặc đã hết hạn.");
+                    throw new BadRequestException(MessageConstant.Authentication.RefreshToken.ExpiredToken);
                 }
 
                 // Bước 3: Lấy thông tin người dùng
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    throw new NotFoundException("Không tìm thấy người dùng.");
+                    throw new NotFoundException(MessageConstant.Authentication.RefreshToken.UserNotFound);
                 }
 
                 var roles = await _userManager.GetRolesAsync(user) ?? new List<string>();
@@ -314,7 +314,7 @@ namespace TellMe.Service.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi refresh token: " + ex.Message);
+                throw new Exception(ex.Message);
             }
         }
 
@@ -326,7 +326,7 @@ namespace TellMe.Service.Services
                 var existingUser = await _userManager.FindByEmailAsync(registerRequest.Email);
                 if (existingUser != null)
                 {
-                    throw new BadRequestException(MessageConstant.RegisterMessage.AlreadyExistEmail);
+                    throw new BadRequestException(MessageConstant.Authentication.Register.EmailExists);
                 }
 
                 // Create new user
@@ -343,7 +343,7 @@ namespace TellMe.Service.Services
                 if (!identityResult.Succeeded)
                 {
                     var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
-                    throw new BadRequestException($"User creation failed: {errors}");
+                    throw new BadRequestException(errors);
                 }
 
                 // Add roles if specified
@@ -353,7 +353,7 @@ namespace TellMe.Service.Services
                     if (!identityResult.Succeeded)
                     {
                         var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
-                        throw new BadRequestException($"Failed to add roles: {errors}");
+                        throw new BadRequestException(MessageConstant.Authentication.Register.RegistrationFailed + errors);
                     }
                 }
 

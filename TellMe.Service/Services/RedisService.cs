@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TellMe.Repository.Redis.Models;
 using TellMe.Repository.Redis.Repositories;
+using TellMe.Service.Constants;
 using TellMe.Service.Services.Interface;
 
 namespace TellMe.Service.Services
@@ -22,10 +23,10 @@ namespace TellMe.Service.Services
                 throw new ArgumentNullException(nameof(accountToken));
 
             if (string.IsNullOrWhiteSpace(accountToken.AccountId))
-                throw new ArgumentException("AccountId cannot be empty or null.", nameof(accountToken.AccountId));
+                throw new ArgumentException(nameof(accountToken.AccountId));
 
             if (accountToken.ExpiredDate <= DateTime.UtcNow)
-                throw new ArgumentException("Token expiration date must be in the future.", nameof(accountToken.ExpiredDate));
+                throw new ArgumentException(nameof(accountToken.ExpiredDate));
 
             try
             {
@@ -33,14 +34,14 @@ namespace TellMe.Service.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to add account token: {ex.Message}", ex);
+                throw new InvalidOperationException(ex.Message);
             }
         }
 
         public async Task<AccountToken> GetAccountTokenAsync(string accountId)
         {
             if (string.IsNullOrWhiteSpace(accountId))
-                throw new ArgumentException("AccountId cannot be empty or null.", nameof(accountId));
+                throw new ArgumentException(nameof(accountId));
 
             try
             {
@@ -48,13 +49,13 @@ namespace TellMe.Service.Services
                 if (accountToken == null)
                     throw new 
                         
-                        ($"Account token for AccountId {accountId} not found.");
+                        (MessageConstant.Cache.AccountTokenNotFound);
 
                 return accountToken;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to retrieve account token: {ex.Message}", ex);
+                throw new InvalidOperationException(ex.Message);
             }
         }
 
@@ -64,19 +65,19 @@ namespace TellMe.Service.Services
                 throw new ArgumentNullException(nameof(accountToken));
 
             if (string.IsNullOrWhiteSpace(accountToken.AccountId))
-                throw new ArgumentException("AccountId cannot be empty or null.", nameof(accountToken.AccountId));
+                throw new ArgumentException(nameof(accountToken.AccountId));
 
             try
             {
                 var existingToken = await _accountTokenRedisRepository.GetAccountToken(accountToken.AccountId);
                 if (existingToken == null)
-                    throw new InvalidOperationException($"Account token for AccountId {accountToken.AccountId} not found.");
+                    throw new InvalidOperationException(MessageConstant.Cache.AccountTokenNotFound);
 
                 await _accountTokenRedisRepository.UpdateAccountToken(accountToken);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to update account token: {ex.Message}", ex);
+                throw new InvalidOperationException(ex.Message);
             }
         }
 
@@ -86,19 +87,19 @@ namespace TellMe.Service.Services
                 throw new ArgumentNullException(nameof(accountToken));
 
             if (string.IsNullOrWhiteSpace(accountToken.AccountId))
-                throw new ArgumentException("AccountId cannot be empty or null.", nameof(accountToken.AccountId));
+                throw new ArgumentException(nameof(accountToken.AccountId));
 
             try
             {
                 var existingToken = await _accountTokenRedisRepository.GetAccountToken(accountToken.AccountId);
                 if (existingToken == null)
-                    throw new InvalidOperationException($"Account token for AccountId {accountToken.AccountId} not found.");
+                    throw new InvalidOperationException(MessageConstant.Cache.AccountTokenNotFound);
 
                 await _accountTokenRedisRepository.DeleteAccountToken(accountToken);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to delete account token: {ex.Message}", ex);
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }

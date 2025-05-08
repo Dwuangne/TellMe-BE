@@ -8,27 +8,68 @@ namespace TellMe.Service.Constants
 {
     public static class MessageConstant
     {
-        public static class LoginMessage
+        public static class Authentication
         {
-            public const string NotExistEmail = "Email does not exist in the system.";
-            public const string DisabledAccount = "Account has been disabled.";
-            public const string NotVerifyEmail = "Email is not verified.";
-            public const string InvalidEmailOrPassword = "Email or Password is invalid.";
+            public static class Login
+            {
+                public const string EmailNotFound = "Email does not exist.";
+                public const string AccountDisabled = "Account is disabled.";
+                public const string EmailNotVerified = "Email is not verified.";
+                public const string InvalidCredentials = "Invalid email or password.";
+            }
+
+            public static class Register
+            {
+                public const string EmailExists = "Email already exists.";
+                public const string RegistrationFailed = "Failed to register new account.";
+            }
+
+            public static class RefreshToken
+            {
+                public const string InvalidToken = "Invalid refresh token.";
+                public const string ExpiredToken = "Refresh token is expired.";
+                public const string UserNotFound = "User not found.";
+            }
+
+            public static class Jwt
+            {
+                public const string InvalidConfiguration = "Invalid JWT configuration. Check Key, Issuer, and Audience settings.";
+            }
         }
-        public static class RegisterMessage
+
+        public static class Account
         {
-            public const string AlreadyExistEmail = "Email already exists in the system.";
-            public const string AlreadyExistAccount = "Email already exists in the system and you should login by email, password.";
-            public const string RegistNewAccountFailure = "Have some thing error add user in system.";
+            public static class ChangePassword
+            {
+                public const string EmailNotFound = "Email does not exist.";
+                public const string EmailNotVerified = "Email is not verified.";
+                public const string AccountDisabled = "Account is disabled.";
+            }
+            public static class ForgotPassword
+            {
+                public const string EmailNotFound = "Email does not exist.";
+                public const string EmailNotVerified = "Email is not verified.";
+                public const string AccountDisabled = "Account is disabled.";
+            }
+            public static class ResetPassword
+            {
+                public const string EmailNotFound = "Email does not exist.";
+                public const string EmailNotVerified = "Email is not verified.";
+                public const string AccountDisabled = "Account is disabled.";
+            }
         }
-        public static class EmailMessage
+
+        public static class Email
         {
-            public const string FileNotFound = "Email template not found.";
-            public const string ConfirmSubject = "Confirm Your Email Address.";
+            public const string ConfirmSubject = "Confirm Your Email Address";
+            public const string ForgotPasswordSubject = "Reset Your TellMe Password";
+            public const string TemplateNotFound = "Email template not found.";
+            public const string LogoImageNotFound = "Logo image not found.";
         }
-        public static class JWTMessage
+
+        public static class Cache
         {
-            public const string InvalidOperationJWT = "JWT configuration values are missing. Check JwtAuth:Key, JwtAuth:Issuer, and JwtAuth:Audience.";
+            public const string AccountTokenNotFound = "Account token not found in cache.";
         }
     }
 }

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>TellMe Email Verification</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #eefffb;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 20px !important;
+            }
+
+            .button {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eefffb;">
+        <tr>
+            <td align="center" style="padding: 30px 10px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 20px; background-color: #eefffb; text-align: left;">
+                            <table border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="padding-right: 15px;">
+                                        <img src="cid:Logo_TellMe" alt="TellMe Logo" style="max-width: 100px; height: auto;">
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        <span style="font-size: 20px; font-weight: 700; color: #0f766e;">TellMe</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px; text-align: left;">
+                            <h2 style="color: #0f766e; font-size: 24px; font-weight: 700; margin-bottom: 20px;">Verify Your Email Address</h2>
+                            <p style="font-size: 16px; color: #1e293b; margin-bottom: 20px;">Dear @Model.FullName,</p>
+                            <p style="font-size: 16px; color: #1e293b; margin-bottom: 20px;">Thank you for joining TellMe! Please verify your email address to start sending emails by clicking the button below:</p>
+                            <p style="font-size: 14px; color: #64748b; margin-bottom: 30px; font-style: italic;">This link is valid for 48 hours. After that, please request a new confirmation email.</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="@Model.ConfirmationLink" class="button" style="display: inline-block; background-color: #0f766e; color: #ffffff; padding: 12px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; transition: background-color 0.3s ease;">Confirm Email</a>
+                            </div>
+                            <p style="font-size: 14px; color: #64748b; margin-bottom: 0;">If you didn’t create an account with TellMe, please ignore this email.</p>
+                        </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px; background-color: #f8fafc; text-align: center; font-size: 14px; color: #64748b;">
+                            <img src="cid:Logo_TellMe" alt="TellMe" style="max-width: 80px; height: auto; margin-bottom: 15px;">
+                            <p style="font-weight: 600; color: #0f766e; margin-bottom: 10px;">Send with Confidence</p>
+                            <p style="margin-bottom: 15px;">© 2025 TellMe, FPT University, Ho Chi Minh City</p>
+                            <p>
+                                <a href="#" style="color: #0f766e; margin: 0 8px; font-weight: 600;">Blog</a> |
+                                <a href="#" style="color: #0f766e; margin: 0 8px; font-weight: 600;">GitHub</a> |
+                                <a href="#" style="color: #0f766e; margin: 0 8px; font-weight: 600;">Twitter</a> |
+                                <a href="#" style="color: #0f766e; margin: 0 8px; font-weight: 600;">Facebook</a> |
+                                <a href="#" style="color: #0f766e; margin: 0 8px; font-weight: 600;">LinkedIn</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

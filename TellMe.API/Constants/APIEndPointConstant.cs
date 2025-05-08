@@ -23,6 +23,7 @@
             public const string UpdateAccount = "update-account";
             public const string ChangePassword = "change-password";
             public const string ForgotPassword = "forgot-password";
+            public const string ResetPassword = "reset-password";
         }
     }
 }
