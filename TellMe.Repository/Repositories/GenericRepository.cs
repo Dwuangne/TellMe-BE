@@ -9,7 +9,7 @@ using TellMe.Repository.DBContexts;
 
 namespace TellMe.Repository.Repositories
 {
-    public class GenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly TellMeDBContext _context;
         private readonly DbSet<T> _dbSet;
@@ -22,9 +22,19 @@ namespace TellMe.Repository.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public virtual async Task<T?> GetByIdAsync(object id, params Expression<Func<T, object>>[] includeProperties)
         {
-            return await _dbSet.FindAsync(id);
+            IQueryable<T> query = _dbSet;
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id));
         }
 
         public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
@@ -38,16 +48,23 @@ namespace TellMe.Repository.Repositories
         }
 
         public async Task<(IEnumerable<T> Items, int TotalPages, int TotalRecords)> GetAsync(
-            Expression<Func<T, bool>>? filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            List<Expression<Func<T, object>>>? includes = null,
-            int? pageIndex = null,
-            int? pageSize = null)
+             Expression<Func<T, bool>>? filter = null,
+             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+             string includeProperties = "",
+             int? pageIndex = null,
+             int? pageSize = null)
         {
             IQueryable<T> query = _dbSet.AsQueryable();
 
             // Apply includes
-            query = ApplyIncludes(query, includes);
+            if (!string.IsNullOrWhiteSpace(includeProperties))
+            {
+                // Handle multiple include statements separated by comma
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty.Trim());
+                }
+            }
 
             // Apply filter
             if (filter != null)
@@ -55,7 +72,7 @@ namespace TellMe.Repository.Repositories
                 query = query.Where(filter);
             }
 
-            // Get total records (only if pagination is requested)
+            // Get total record count (only when pagination is needed)
             int totalRecords = pageIndex.HasValue && pageSize.HasValue
                 ? await query.CountAsync()
                 : 0;
@@ -80,18 +97,6 @@ namespace TellMe.Repository.Repositories
             var items = await query.ToListAsync();
 
             return (items, totalPages, totalRecords);
-        }
-
-        private IQueryable<T> ApplyIncludes(IQueryable<T> query, List<Expression<Func<T, object>>>? includes)
-        {
-            if (includes != null && includes.Any())
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
-            }
-            return query;
         }
 
         public async Task AddAsync(T entity)

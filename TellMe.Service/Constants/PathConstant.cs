@@ -14,7 +14,7 @@ namespace TellMe.Service.Constants
             public const string ConfirmEmail = RouteEmail + "/Confirmed.html";
             public const string ConfirmEmailSuccess = RouteEmail + "/ConfirmedSuccess.html";
             public const string ConfirmEmailFailure = RouteEmail + "/ConfirmedFailure.html";
-            public const string ForgotPassword = RouteEmail + "/ConfirmedFailure.html";
+            public const string ForgotPassword = RouteEmail + "/ForgotPassword.html";
         }
         public static class PathAssets
         {

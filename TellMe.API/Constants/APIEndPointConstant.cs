@@ -25,5 +25,15 @@
             public const string ForgotPassword = "forgot-password";
             public const string ResetPassword = "reset-password";
         }
+        public static class PsychologicalTest
+        {
+            public const string PsychologicalTestEndpoint = ApiEndPoint + "/psychological-test";
+        }
+
+        public static class UserTest
+        {
+            public const string UserTestEndpoint = ApiEndPoint + "/user-test";
+        }
+
     }
 }
