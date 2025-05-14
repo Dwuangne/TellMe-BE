@@ -13,7 +13,15 @@ builder.Services.AddLogging(logging =>
     logging.ClearProviders(); // Xóa các provider mặc định nếu có
     logging.AddConsole();
     logging.AddDebug();
-    logging.SetMinimumLevel(LogLevel.Warning); // Chỉ log Warning trở lên
+    // Thay đổi mức log cho development
+    if (builder.Environment.IsDevelopment())
+    {
+        logging.SetMinimumLevel(LogLevel.Information);
+    }
+    else 
+    {
+        logging.SetMinimumLevel(LogLevel.Warning); // Chỉ log Warning trở lên ở môi trường production
+    }
 });
 
 // Add services to the container.
@@ -44,5 +52,10 @@ builder.Services.AddCors(cors => cors.AddPolicy(
                         ));
 
 var app = builder.Build();
+
+// Đảm bảo middleware cho xử lý ngoại lệ phải đặt trước các middleware khác
+app.UseMiddleware<ExceptionMiddleware>();
+
+// Sau đó gọi ApplicationConfig
 app.AddApplicationConfig();
 app.Run();
