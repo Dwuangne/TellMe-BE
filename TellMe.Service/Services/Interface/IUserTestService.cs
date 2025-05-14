@@ -11,7 +11,7 @@ namespace TellMe.Service.Services.Interface
 {
     public interface IUserTestService
     {
-        Task<UserTestReponse> SubmitTestAnswersAsync(Guid userId, SubmitUserTestRequest request);
+        Task<UserTestResponse> SubmitTestAnswersAsync(Guid userId, SubmitUserTestRequest request);
         Task<PaginationObject> GetUserTestHistoryAsync(Guid userId, int page = 1, int pageSize = 10);
     }
 }

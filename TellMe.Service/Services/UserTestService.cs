@@ -28,7 +28,7 @@ namespace TellMe.Service.Services
         {
             var response = await _unitOfWork.UserTestRepository.GetAsync(
                     filter: ut => ut.UserId == userId,
-                    includeProperties: "UserAnswer",
+                    includeProperties: "UserAnswers",
                     pageIndex: page,
                     pageSize: pageSize
                 );
@@ -42,7 +42,7 @@ namespace TellMe.Service.Services
 
         }
 
-        public async Task<UserTestReponse> SubmitTestAnswersAsync(Guid userId, SubmitUserTestRequest request)
+        public async Task<UserTestResponse> SubmitTestAnswersAsync(Guid userId, SubmitUserTestRequest request)
         {
 
             var testResult = await _unitOfWork.PsychologicalTestRepository.GetAsync(
@@ -51,6 +51,8 @@ namespace TellMe.Service.Services
             );
             var test = testResult.Items.FirstOrDefault();
 
+            int totalScore = 0;
+            
             if (test == null)
             {
                 throw new KeyNotFoundException($"Active psychological test with ID {request.TestId} not found");
@@ -59,9 +61,7 @@ namespace TellMe.Service.Services
             // Create a new UserTest record
             var userTest = _mapper.Map<UserTest>(request);
 
-            // Process user answers and calculate scores
-            int totalScore = 0;
-            int totalPossibleScore = 0;
+            userTest.UserId = userId;
 
             foreach (var answer in userTest.UserAnswers)
             {
@@ -86,10 +86,12 @@ namespace TellMe.Service.Services
             // Update UserTest with final score
             userTest.TotalScore = totalScore;
 
+            await _unitOfWork.UserTestRepository.AddAsync(userTest);
+
             // Save all changes
             await _unitOfWork.CommitAsync();
 
-            return _mapper.Map<UserTestReponse>(userTest);
+            return _mapper.Map<UserTestResponse>(userTest);
         }
     }
 }
