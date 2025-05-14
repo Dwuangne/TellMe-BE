@@ -72,37 +72,23 @@ namespace TellMe.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Get questions and answer options for a test (without correct answers)
-        /// </summary>
-        /// <param name="id">Test id</param>
-        /// <returns>Test with questions and answer options</returns>
-        [HttpGet("{id}/questions")]
+        [HttpPost]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(ResponseObject), 200)]
         [ProducesResponseType(typeof(ResponseObject), 404)]
-        public async Task<IActionResult> GetTestQuestions(Guid id)
+        public async Task<IActionResult> GetTestQuestions([FromBody] CreatePsychologicalTestRequest request)
         {
-            try
-            {
-                var result = await _psychologicalTestService.GetTestByIdAsync(id);
+            var result = await _psychologicalTestService.CreateTestAsync(request);
 
-                return Ok(new ResponseObject
-                {
-                    Status = HttpStatusCode.OK,
-                    Message = "Successfully retrieved test questions",
-                    Data = result
-                });
-            }
-            catch (KeyNotFoundException ex)
+            return Ok(new ResponseObject
             {
-                return NotFound(new ResponseObject
-                {
-                    Status = HttpStatusCode.NotFound,
-                    Message = ex.Message,
-                    Data = null
-                });
-            }
+                Status = HttpStatusCode.OK,
+                Message = "Create successfull psychological test",
+                Data = result
+            });  
         }
+
+
 
         /// <summary>
         /// Update an existing psychological test
