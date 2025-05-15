@@ -10,6 +10,12 @@ namespace TellMe.Repository.Enities
 {
     public class PsychologistExperience
     {
+        public PsychologistExperience()
+        {
+            Id = Guid.NewGuid();
+            CreatedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
+        }
         [Key]
         public Guid Id { get; set; }
         [Required]
@@ -23,8 +29,8 @@ namespace TellMe.Repository.Enities
         public bool IsCurrent { get; set; } // Đánh dấu kinh nghiệm hiện tại
         [MaxLength(500)]
         public string? Description { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } 
+        public DateTime UpdatedAt { get; set; } 
         public bool IsDeleted { get; set; } = false;
 
         // Navigation properties

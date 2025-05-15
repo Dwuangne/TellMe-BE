@@ -14,7 +14,6 @@ namespace TellMe.Service.Mapping
     {
         public AutoMapperProfiles()
         {
-
             CreateMap<AnswerOptionRequest, AnswerOption>().ReverseMap();
             CreateMap<QuestionRequest, Question>().ReverseMap();
             CreateMap<CreatePsychologicalTestRequest, PsychologicalTest>().ReverseMap();
@@ -22,12 +21,20 @@ namespace TellMe.Service.Mapping
             CreateMap<SubmitUserTestRequest, UserTest>().ReverseMap();
             CreateMap<UserAnswerSubmission, UserAnswer>().ReverseMap();
 
-
             CreateMap<AnswerOption, AnswerOptionResponse>().ReverseMap();
             CreateMap<PsychologicalTest, PsychologicalTestResponse>().ReverseMap();
             CreateMap<Question, QuestionResponse>().ReverseMap();
             CreateMap<UserTest, UserTestResponse>().ReverseMap();
             CreateMap<UserAnswer, UserAnswerResponse>().ReverseMap();
+            CreateMap<PsychologistCreateRequest, Psychologist>().ReverseMap();
+            CreateMap<PsychologistUpdateRequest, Psychologist>().ReverseMap();
+            CreateMap<Psychologist, PsychologistResponse>().ReverseMap();
+            CreateMap<PsychologistEducationRequest, PsychologistEducation>().ReverseMap();
+            CreateMap<PsychologistEducation, PsychologistEducationResponse>().ReverseMap();
+            CreateMap<PsychologistExperienceRequest, PsychologistExperience>().ReverseMap();
+            CreateMap<PsychologistExperience, PsychologistExperienceResponse>().ReverseMap(); 
+            CreateMap<PsychologistLicenseCertificationRequest, PsychologistLicenseCertification>().ReverseMap();
+            CreateMap<PsychologistLicenseCertification, PsychologistLicenseCertificationResponse>().ReverseMap(); 
             CreateMap<PsychologistReview, PsychologistReviewResponse>().ReverseMap();
             CreateMap<SubscriptionPackage, SubscriptionPackageResponse>().ReverseMap();
             CreateMap<Payment, PaymentResponse>().ReverseMap();
