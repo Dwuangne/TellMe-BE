@@ -12,9 +12,9 @@ namespace TellMe.Service.Models.ResponseModels
     {
         public Guid Id { get; set; }
         public Guid TestId { get; set; }
-        public string TestTitle { get; set; } // Chỉ lấy tiêu đề của Test
+        public string TestTitle { get; set; } = string.Empty;
         public int? TotalScore { get; set; }
-        public string Evaluation { get; set; }
+        public string Evaluation { get; set; } = string.Empty;
         public Guid? PsychologistId { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<UserAnswerResponse> UserAnswers { get; set; } = new List<UserAnswerResponse>();

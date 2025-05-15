@@ -18,7 +18,6 @@ namespace TellMe.Service.Models.RequestModels
 
     public class UserAnswerSubmission
     {
-        public int? Score { get; set; }
 
         [Required]
         public Guid QuestionId { get; set; }
