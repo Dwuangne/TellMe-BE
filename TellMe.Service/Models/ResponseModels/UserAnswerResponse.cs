@@ -11,9 +11,9 @@ namespace TellMe.Service.Models.ResponseModels
     {
         public Guid Id { get; set; }
         public Guid QuestionId { get; set; }
-        public string QuestionText { get; set; } // Chỉ lấy nội dung câu hỏi
+        public string QuestionContent { get; set; } = string.Empty;
         public Guid AnswerOptionId { get; set; }
-        public string AnswerOptionText { get; set; } // Chỉ lấy nội dung tùy chọn
+        public string AnswerOptionContent { get; set; } = string.Empty;
         public int? Score { get; set; }
     }
 }

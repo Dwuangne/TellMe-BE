@@ -28,16 +28,17 @@ namespace TellMe.Service.Services
         {
             var response = await _unitOfWork.UserTestRepository.GetAsync(
                     filter: ut => ut.UserId == userId,
-                    includeProperties: "UserAnswers",
+                    includeProperties: "Test,UserAnswers.Question,UserAnswers.AnswerOption",
                     pageIndex: page,
                     pageSize: pageSize
                 );
+            var userTestResponses = _mapper.Map<List<UserTestResponse>>(response.Items);
             return new PaginationObject
             {
                 PageIndex = page,
                 TotalPage = response.TotalPages,
                 TotalRecord = response.TotalRecords,
-                Data = response.Items
+                Data = userTestResponses
             };
 
         }
@@ -81,6 +82,8 @@ namespace TellMe.Service.Services
                 totalScore += selectedOption.Score;
 
                 // Add to question results
+                answer.Question = question;
+                answer.AnswerOption = selectedOption;
             }
 
             // Update UserTest with final score
