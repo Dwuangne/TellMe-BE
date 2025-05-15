@@ -51,57 +51,37 @@ namespace TellMe.API.Controllers
         [ProducesResponseType(typeof(ResponseObject), 404)]
         public async Task<IActionResult> GetTestById(Guid id)
         {
-            try
-            {
-                var test = await _psychologicalTestService.GetTestByIdAsync(id);
-                return Ok(new ResponseObject
-                {
-                    Status = HttpStatusCode.OK,
-                    Message = "Successfully retrieved test",
-                    Data = test
-                });
-            }
-            catch (KeyNotFoundException ex)
+            var test = await _psychologicalTestService.GetTestByIdAsync(id);
+            if (test == null)
             {
                 return NotFound(new ResponseObject
                 {
                     Status = HttpStatusCode.NotFound,
-                    Message = ex.Message,
+                    Message = $"Test with id {id} not found",
                     Data = null
                 });
             }
+            return Ok(new ResponseObject
+            {
+                Status = HttpStatusCode.OK,
+                Message = "Successfully retrieved test",
+                Data = test
+            });
         }
 
-        /// <summary>
-        /// Get questions and answer options for a test (without correct answers)
-        /// </summary>
-        /// <param name="id">Test id</param>
-        /// <returns>Test with questions and answer options</returns>
-        [HttpGet("{id}/questions")]
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(ResponseObject), 200)]
         [ProducesResponseType(typeof(ResponseObject), 404)]
-        public async Task<IActionResult> GetTestQuestions(Guid id)
+        public async Task<IActionResult> GetTestQuestions([FromBody] CreatePsychologicalTestRequest request)
         {
-            try
+            var result = await _psychologicalTestService.CreateTestAsync(request);
+            return Ok(new ResponseObject
             {
-                var result = await _psychologicalTestService.GetTestByIdAsync(id);
-
-                return Ok(new ResponseObject
-                {
-                    Status = HttpStatusCode.OK,
-                    Message = "Successfully retrieved test questions",
-                    Data = result
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new ResponseObject
-                {
-                    Status = HttpStatusCode.NotFound,
-                    Message = ex.Message,
-                    Data = null
-                });
-            }
+                Status = HttpStatusCode.OK,
+                Message = "Create successful psychological test",
+                Data = result
+            });
         }
 
         /// <summary>
@@ -111,7 +91,7 @@ namespace TellMe.API.Controllers
         /// <param name="request">Test update request</param>
         /// <returns>Updated test</returns>
         [HttpPut("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(ResponseObject), 200)]
         [ProducesResponseType(typeof(ResponseObject), 400)]
         [ProducesResponseType(typeof(ResponseObject), 404)]
@@ -127,25 +107,24 @@ namespace TellMe.API.Controllers
                 });
             }
 
-            try
-            {
-                var updatedTest = await _psychologicalTestService.UpdateTestAsync(id, request);
-                return Ok(new ResponseObject
-                {
-                    Status = HttpStatusCode.OK,
-                    Message = "Test updated successfully",
-                    Data = updatedTest
-                });
-            }
-            catch (KeyNotFoundException ex)
+            var test = await _psychologicalTestService.GetTestByIdAsync(id);
+            if (test == null)
             {
                 return NotFound(new ResponseObject
                 {
                     Status = HttpStatusCode.NotFound,
-                    Message = ex.Message,
+                    Message = $"Test with id {id} not found",
                     Data = null
                 });
             }
+
+            var updatedTest = await _psychologicalTestService.UpdateTestAsync(id, request);
+            return Ok(new ResponseObject
+            {
+                Status = HttpStatusCode.OK,
+                Message = "Test updated successfully",
+                Data = updatedTest
+            });
         }
 
         /// <summary>
@@ -154,7 +133,7 @@ namespace TellMe.API.Controllers
         /// <param name="id">Test id</param>
         /// <returns>Success status</returns>
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(ResponseObject), 204)]
         [ProducesResponseType(typeof(ResponseObject), 404)]
         public async Task<IActionResult> DeleteTest(Guid id)
@@ -165,12 +144,12 @@ namespace TellMe.API.Controllers
                 return NotFound(new ResponseObject
                 {
                     Status = HttpStatusCode.NotFound,
-                    Message = $"Not found pyschological test with {id}",
+                    Message = $"Not found psychological test with {id}",
                     Data = null
                 });
             }
 
-            return Ok( new ResponseObject
+            return Ok(new ResponseObject
             {
                 Status = HttpStatusCode.NoContent,
                 Message = "Test deleted successfully",

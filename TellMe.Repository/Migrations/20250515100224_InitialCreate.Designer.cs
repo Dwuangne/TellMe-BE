@@ -12,8 +12,8 @@ using TellMe.Repository.DBContexts;
 namespace TellMe.Repository.Migrations
 {
     [DbContext(typeof(TellMeAuthDBContext))]
-    [Migration("20250422141013_InitMigrationTellMeAuthDBContext")]
-    partial class InitMigrationTellMeAuthDBContext
+    [Migration("20250515100224_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

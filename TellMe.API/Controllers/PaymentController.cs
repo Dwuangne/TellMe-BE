@@ -90,7 +90,7 @@ namespace TellMe.API.Controllers
         /// Get current user's payments
         /// </summary>
         [HttpGet("user")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [ProducesResponseType(typeof(ResponseObject), 200)]
         [ProducesResponseType(typeof(ResponseObject), 401)]
         [ProducesResponseType(typeof(ResponseObject), 404)]

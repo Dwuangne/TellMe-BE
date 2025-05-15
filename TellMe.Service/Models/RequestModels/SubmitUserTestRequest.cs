@@ -13,11 +13,12 @@ namespace TellMe.Service.Models.RequestModels
         public string Evaluation { get; set; } = string.Empty;
 
         [Required]
-        public List<UserAnswerSubmission> Answers { get; set; } = new List<UserAnswerSubmission>();
+        public List<UserAnswerSubmission> UserAnswers { get; set; } = new List<UserAnswerSubmission>();
     }
 
     public class UserAnswerSubmission
     {
+
         [Required]
         public Guid QuestionId { get; set; }
 
