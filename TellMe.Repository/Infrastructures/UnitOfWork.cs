@@ -23,6 +23,11 @@ namespace TellMe.Repository.Infrastructures
         private IGenericRepository<AnswerOption> _answerOptionRepository;
         private IGenericRepository<UserTest> _userTestRepository;
         private IGenericRepository<UserAnswer> _userAnswerRepository;
+        private IGenericRepository<Appointment> _appointmentRepository;
+        private IGenericRepository<PsychologistReview> _psychologistReviewRepository;
+        private IGenericRepository<Payment> _paymentRepository;
+        private IGenericRepository<UserSubscription> _userSubscriptionRepository;
+        private IGenericRepository<SubscriptionPackage> _subscriptionPackageRepository;
 
         public UnitOfWork(TellMeDBContext dbContext, TellMeAuthDBContext dbAuthContext) 
         {
@@ -56,6 +61,20 @@ namespace TellMe.Repository.Infrastructures
         public IGenericRepository<UserAnswer> UserAnswerRepository =>
             _userAnswerRepository ??= new GenericRepository<UserAnswer>(_dbContext);
 
+        public IGenericRepository<Appointment> AppointmentRepository => 
+            _appointmentRepository ??= new GenericRepository<Appointment>(_dbContext);
+
+        public IGenericRepository<PsychologistReview> PsychologistReviewRepository => 
+            _psychologistReviewRepository ??= new GenericRepository<PsychologistReview>(_dbContext);
+
+        public IGenericRepository<Payment> PaymentRepository => 
+            _paymentRepository ??= new GenericRepository<Payment>(_dbContext);
+
+        public IGenericRepository<UserSubscription> UserSubscriptionRepository => 
+            _userSubscriptionRepository ??= new GenericRepository<UserSubscription>(_dbContext);
+
+        public IGenericRepository<SubscriptionPackage> SubscriptionPackageRepository => 
+            _subscriptionPackageRepository ??= new GenericRepository<SubscriptionPackage>(_dbContext);
 
         public void Commit()
         {

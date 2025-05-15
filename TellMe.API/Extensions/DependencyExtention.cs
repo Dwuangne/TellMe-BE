@@ -51,7 +51,6 @@ namespace TellMe.API.Extensions
                 options.SignIn.RequireConfirmedEmail = true;
             });
 
-            // Cấu hình JWT Authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -89,6 +88,11 @@ namespace TellMe.API.Extensions
             services.AddScoped<IRedisService, RedisService>();
             services.AddScoped<IPsychologicalTestService, PsychologicalTestService>();
             services.AddScoped<IUserTestService, UserTestService>();
+            services.AddScoped<IPsychologistReviewService, PsychologistReviewService>();
+            services.AddScoped<ISubscriptionPackageService, SubscriptionPackageService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IUserSubscriptionService, UserSubscriptionService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
 
             services.AddSingleton<IEmailRepository, EmailRepository>();
             services.AddSingleton<IAccountTokenRedisRepository, AccountTokenRedisRepository>();

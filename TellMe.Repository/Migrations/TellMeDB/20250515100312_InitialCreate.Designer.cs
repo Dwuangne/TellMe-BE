@@ -12,7 +12,7 @@ using TellMe.Repository.DBContexts;
 namespace TellMe.Repository.Migrations.TellMeDB
 {
     [DbContext(typeof(TellMeDBContext))]
-    [Migration("20250513033837_InitialCreate")]
+    [Migration("20250515100312_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -59,6 +59,103 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.HasIndex("QuestionId");
 
                     b.ToTable("AnswerOptions");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.Appointment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("AppointmentDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ExpertId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Fee")
+                        .HasColumnType("decimal(18,0)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MeetingURL")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid?>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid?>("AppointmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SubscriptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("TellMe.Repository.Enities.PsychologicalTest", b =>
@@ -286,6 +383,40 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.ToTable("PsychologistLicenseCertifications");
                 });
 
+            modelBuilder.Entity("TellMe.Repository.Enities.PsychologistReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ExpertId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<byte?>("Rating")
+                        .HasColumnType("tinyint");
+
+                    b.Property<DateTime>("ReviewDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReviewDateUpdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PsychologistReviews");
+                });
+
             modelBuilder.Entity("TellMe.Repository.Enities.Question", b =>
                 {
                     b.Property<Guid>("Id")
@@ -327,6 +458,46 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.ToTable("Questions");
                 });
 
+            modelBuilder.Entity("TellMe.Repository.Enities.SubscriptionPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DurationUnit")
+                        .HasMaxLength(10)
+                        .HasColumnType("int");
+
+                    b.Property<string>("Features")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PackageName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubscriptionPackages");
+                });
+
             modelBuilder.Entity("TellMe.Repository.Enities.UserAnswer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -336,21 +507,11 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Property<Guid?>("AnswerOptionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AnswerText")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Score")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserTestId")
                         .HasColumnType("uniqueidentifier");
@@ -366,6 +527,42 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.ToTable("UserAnswers");
                 });
 
+            modelBuilder.Entity("TellMe.Repository.Enities.UserSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("UserSubscriptions");
+                });
+
             modelBuilder.Entity("TellMe.Repository.Enities.UserTest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -375,9 +572,6 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("EndTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Evaluation")
                         .HasMaxLength(10000)
                         .HasColumnType("nvarchar(max)");
@@ -385,17 +579,11 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Property<Guid?>("PsychologistId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid>("TestId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("TotalScore")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -418,6 +606,30 @@ namespace TellMe.Repository.Migrations.TellMeDB
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.Appointment", b =>
+                {
+                    b.HasOne("TellMe.Repository.Enities.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId");
+
+                    b.Navigation("Payment");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.Payment", b =>
+                {
+                    b.HasOne("TellMe.Repository.Enities.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId");
+
+                    b.HasOne("TellMe.Repository.Enities.UserSubscription", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId");
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("TellMe.Repository.Enities.PsychologistEducation", b =>
@@ -488,6 +700,23 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Navigation("Question");
 
                     b.Navigation("UserTest");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.UserSubscription", b =>
+                {
+                    b.HasOne("TellMe.Repository.Enities.SubscriptionPackage", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TellMe.Repository.Enities.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId");
+
+                    b.Navigation("Package");
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("TellMe.Repository.Enities.UserTest", b =>

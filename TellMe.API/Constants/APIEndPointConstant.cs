@@ -35,5 +35,29 @@
             public const string UserTestEndpoint = ApiEndPoint + "/user-test";
         }
 
+        public static class PsychologistReview
+        {
+            public const string PsychologistReviewEndpoint = ApiEndPoint + "/psychologist-reviews";
+        }
+
+        public static class SubscriptionPackage
+        {
+            public const string SubscriptionPackageEndpoint = ApiEndPoint + "/subscription-packages";
+        }
+
+        public static class Payment
+        {
+            public const string PaymentEndpoint = ApiEndPoint + "/payments";
+        }
+
+        public static class UserSubscription
+        {
+            public const string UserSubscriptionEndpoint = ApiEndPoint + "/usersubscriptions";
+        }
+
+        public static class Appointment
+        {
+            public const string AppointmentEndpoint = ApiEndPoint + "/appointments";
+        }
     }
 }

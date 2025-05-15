@@ -26,7 +26,7 @@ namespace TellMe.Repository.Enities
         [Required]
         public Guid QuestionId { get; set; }
 
-        public Guid AnswerOptionId { get; set; } // Dành cho trắc nghiệm
+        public Guid? AnswerOptionId { get; set; } // Dành cho trắc nghiệm
 
         [ForeignKey("UserTestId")]
         public virtual UserTest UserTest { get; set; }

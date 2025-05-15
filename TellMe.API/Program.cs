@@ -1,3 +1,4 @@
+
 ﻿//=============TELLME==============
 
 using DotNetEnv;
@@ -7,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
-
+using System.Text.Json.Serialization;
 using TellMe.API.Constants;
 using TellMe.API.Extensions;
 using TellMe.Repository.DBContexts;
@@ -72,7 +74,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-//-------------------- App Build & Middleware --------------------
+builder.Services.AddSwaggerGen(c =>
+{
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 var app = builder.Build();
 
 app.UseSwagger();

@@ -20,6 +20,11 @@ namespace TellMe.Repository.Infrastructures
         IGenericRepository<AnswerOption> AnswerOptionRepository { get; }
         IGenericRepository<UserTest> UserTestRepository { get; }
         IGenericRepository<UserAnswer> UserAnswerRepository { get; }
+        IGenericRepository<Appointment> AppointmentRepository { get; }
+        IGenericRepository<PsychologistReview> PsychologistReviewRepository { get; }
+        IGenericRepository<Payment> PaymentRepository { get; }
+        IGenericRepository<UserSubscription> UserSubscriptionRepository { get; }
+        IGenericRepository<SubscriptionPackage> SubscriptionPackageRepository { get; }
 
         void Commit();
         Task CommitAsync();
