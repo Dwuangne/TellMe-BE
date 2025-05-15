@@ -88,6 +88,7 @@ namespace TellMe.API.Extensions
             services.AddScoped<IRedisService, RedisService>();
             services.AddScoped<IPsychologicalTestService, PsychologicalTestService>();
             services.AddScoped<IUserTestService, UserTestService>();
+            services.AddScoped<IPsychologicalService, PsychologicalService>();
             services.AddScoped<IPsychologistReviewService, PsychologistReviewService>();
             services.AddScoped<ISubscriptionPackageService, SubscriptionPackageService>();
             services.AddScoped<IPaymentService, PaymentService>();

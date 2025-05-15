@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using Azure.Core;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,20 @@ namespace TellMe.Service.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+
+        public async Task<UserTestResponse> GetUserTestDetailAsync(Guid userTestId)
+        {
+            var response = await _unitOfWork.UserTestRepository.GetAsync(
+                    filter: ut => ut.Id == userTestId,
+                    includeProperties: "Test,UserAnswers.Question,UserAnswers.AnswerOption",
+                    pageIndex: 1,
+                    pageSize: 1
+                );
+
+            var userTest = response.Items.FirstOrDefault();
+            return _mapper.Map<UserTestResponse>(userTest);
+        }
+
         public async Task<PaginationObject> GetUserTestHistoryAsync(Guid userId, int page = 1, int pageSize = 10)
         {
             var response = await _unitOfWork.UserTestRepository.GetAsync(

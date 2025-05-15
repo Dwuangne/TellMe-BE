@@ -10,6 +10,12 @@ namespace TellMe.Repository.Enities
 {
     public class PsychologistEducation
     {
+        public PsychologistEducation()
+        {
+            Id = Guid.NewGuid();
+            CreatedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
+        }
         [Key]
         public Guid Id { get; set; }
         [Required]
@@ -24,8 +30,8 @@ namespace TellMe.Repository.Enities
         public string? Description { get; set; }
         [MaxLength(200)]
         public string? CertificateFile { get; set; } // Đường dẫn đến file chứng chỉ
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } 
+        public DateTime UpdatedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
 
         // Navigation properties

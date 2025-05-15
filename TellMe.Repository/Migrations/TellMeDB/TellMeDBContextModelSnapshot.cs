@@ -106,7 +106,9 @@ namespace TellMe.Repository.Migrations.TellMeDB
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PaymentId");
+                    b.HasIndex("PaymentId")
+                        .IsUnique()
+                        .HasFilter("[PaymentId] IS NOT NULL");
 
                     b.ToTable("Appointments");
                 });
@@ -147,10 +149,6 @@ namespace TellMe.Repository.Migrations.TellMeDB
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.HasIndex("SubscriptionId");
 
                     b.ToTable("Payments");
                 });
@@ -198,6 +196,10 @@ namespace TellMe.Repository.Migrations.TellMeDB
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("AvatarUrl")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -555,7 +557,9 @@ namespace TellMe.Repository.Migrations.TellMeDB
 
                     b.HasIndex("PackageId");
 
-                    b.HasIndex("PaymentId");
+                    b.HasIndex("PaymentId")
+                        .IsUnique()
+                        .HasFilter("[PaymentId] IS NOT NULL");
 
                     b.ToTable("UserSubscriptions");
                 });
@@ -608,25 +612,11 @@ namespace TellMe.Repository.Migrations.TellMeDB
             modelBuilder.Entity("TellMe.Repository.Enities.Appointment", b =>
                 {
                     b.HasOne("TellMe.Repository.Enities.Payment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId");
+                        .WithOne("Appointment")
+                        .HasForeignKey("TellMe.Repository.Enities.Appointment", "PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Payment");
-                });
-
-            modelBuilder.Entity("TellMe.Repository.Enities.Payment", b =>
-                {
-                    b.HasOne("TellMe.Repository.Enities.Appointment", "Appointment")
-                        .WithMany()
-                        .HasForeignKey("AppointmentId");
-
-                    b.HasOne("TellMe.Repository.Enities.UserSubscription", "Subscription")
-                        .WithMany()
-                        .HasForeignKey("SubscriptionId");
-
-                    b.Navigation("Appointment");
-
-                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("TellMe.Repository.Enities.PsychologistEducation", b =>
@@ -708,8 +698,9 @@ namespace TellMe.Repository.Migrations.TellMeDB
                         .IsRequired();
 
                     b.HasOne("TellMe.Repository.Enities.Payment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId");
+                        .WithOne("Subscription")
+                        .HasForeignKey("TellMe.Repository.Enities.UserSubscription", "PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Package");
 
@@ -736,6 +727,13 @@ namespace TellMe.Repository.Migrations.TellMeDB
             modelBuilder.Entity("TellMe.Repository.Enities.AnswerOption", b =>
                 {
                     b.Navigation("UserAnswers");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.Payment", b =>
+                {
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("TellMe.Repository.Enities.PsychologicalTest", b =>

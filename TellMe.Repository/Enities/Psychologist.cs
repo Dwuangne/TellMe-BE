@@ -10,6 +10,12 @@ namespace TellMe.Repository.Enities
 {
     public class Psychologist
     {
+        public Psychologist()
+        {
+            Id = Guid.NewGuid();
+            CreatedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
+        }
         [Key]
         public Guid Id { get; set; }
         [Required]
@@ -22,9 +28,11 @@ namespace TellMe.Repository.Enities
         public DateTime? DateOfBirth { get; set; }
         [MaxLength(500)]
         public string? Bio { get; set; }
+        [MaxLength(200)]
+        public string? AvatarUrl { get; set; }
         public bool IsVerified { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } 
+        public DateTime UpdatedAt { get; set; }
 
         [Required]
         public Guid UserId { get; set; }
