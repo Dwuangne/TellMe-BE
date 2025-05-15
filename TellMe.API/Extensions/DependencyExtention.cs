@@ -91,6 +91,12 @@ namespace TellMe.API.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IRedisService, RedisService>();
             services.AddScoped<IPsychologicalTestService, PsychologicalTestService>();
+            services.AddScoped<IUserTestService, UserTestService>();
+            services.AddScoped<IPsychologistReviewService, PsychologistReviewService>();
+            services.AddScoped<ISubscriptionPackageService, SubscriptionPackageService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IUserSubscriptionService, UserSubscriptionService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
             return services;
         }
             

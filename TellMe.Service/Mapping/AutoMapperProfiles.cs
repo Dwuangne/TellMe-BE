@@ -28,6 +28,11 @@ namespace TellMe.Service.Mapping
             CreateMap<Question, QuestionResponse>().ReverseMap();
             CreateMap<UserTest, UserTestReponse>().ReverseMap();
             CreateMap<UserAnswer, UserAnswerResponse>().ReverseMap();
+            CreateMap<PsychologistReview, PsychologistReviewResponse>().ReverseMap();
+            CreateMap<SubscriptionPackage, SubscriptionPackageResponse>().ReverseMap();
+            CreateMap<Payment, PaymentResponse>().ReverseMap();
+            CreateMap<UserSubscription, UserSubscriptionResponse>().ReverseMap();
+            CreateMap<Appointment, AppointmentResponse>().ReverseMap();
 
         }
     }

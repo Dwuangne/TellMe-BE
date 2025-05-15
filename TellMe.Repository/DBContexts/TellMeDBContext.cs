@@ -19,6 +19,11 @@ namespace TellMe.Repository.DBContexts
         public DbSet<AnswerOption> AnswerOptions { get; set; }
         public DbSet<UserTest> UserTests { get; set; }
         public DbSet<UserAnswer> UserAnswers { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<PsychologistReview> PsychologistReviews { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<UserSubscription> UserSubscriptions { get; set; }
+        public DbSet<SubscriptionPackage> SubscriptionPackages { get; set; }
 
         public TellMeDBContext()
         {
