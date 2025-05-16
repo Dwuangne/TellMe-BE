@@ -13,10 +13,53 @@ namespace TellMe.API.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
+        private readonly IVnPayService _vnPayService;
 
-        public PaymentController(IPaymentService paymentService)
+        public PaymentController(IPaymentService paymentService, IVnPayService vnPayService)
         {
             _paymentService = paymentService;
+            _vnPayService = vnPayService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreatePaymentUrlVnpay(PaymentInformationModel model)
+        {
+            var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
+
+            if (string.IsNullOrEmpty(url))
+            {
+                return BadRequest(new ResponseObject
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Failed to create payment URL",
+                    Data = null
+                });
+            }
+
+            return Ok(new ResponseObject
+            {
+                Status = HttpStatusCode.OK,
+                Message = "Successfully created payment URL",
+                Data = url
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PaymentCallbackVnpay()
+        {
+            var response = _vnPayService.PaymentExecute(Request.Query);
+
+            if (response == null)
+            {
+                return BadRequest(new ResponseObject
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = "Invalid payment response",
+                    Data = null
+                });
+            }
+
+            return Ok(response);
         }
 
         /// <summary>

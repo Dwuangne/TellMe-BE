@@ -36,6 +36,7 @@ namespace TellMe.Repository.Enities
         public DurationUnit DurationUnit { get; set; } 
 
         public string? Features { get; set; }
+        public int Price { get; set; }
 
         public DateTime CreatedDate { get; set; }
 

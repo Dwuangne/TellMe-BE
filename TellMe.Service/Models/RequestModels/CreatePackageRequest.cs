@@ -24,6 +24,8 @@ namespace TellMe.Service.Models.RequestModels
         public DurationUnit DurationUnit { get; set; }
 
         public string? Features { get; set; }
+
+        public int Price { get; set; }
     }
 
     public class UpdatePackageRequest : CreatePackageRequest

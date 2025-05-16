@@ -94,6 +94,7 @@ namespace TellMe.API.Extensions
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IUserSubscriptionService, UserSubscriptionService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<IVnPayService, VnPayService>();
 
             services.AddSingleton<IEmailRepository, EmailRepository>();
             services.AddSingleton<IAccountTokenRedisRepository, AccountTokenRedisRepository>();
