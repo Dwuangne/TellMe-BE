@@ -10,6 +10,12 @@ namespace TellMe.Repository.Enities
 {
     public class PsychologistLicenseCertification
     {
+        public PsychologistLicenseCertification()
+        {
+            Id = Guid.NewGuid();
+            CreatedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
+        }
         [Key]
         public Guid Id { get; set; }
         [Required]
@@ -24,8 +30,8 @@ namespace TellMe.Repository.Enities
         public DateTime? ExpiryDate { get; set; } // Có thể null nếu không có hạn
         [MaxLength(200)]
         public string? DocumentPath { get; set; } // Đường dẫn đến file giấy phép
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } 
         public bool IsDeleted { get; set; } = false;
 
         // Navigation properties

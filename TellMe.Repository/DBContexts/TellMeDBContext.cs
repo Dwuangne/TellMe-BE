@@ -41,20 +41,33 @@ namespace TellMe.Repository.DBContexts
                 .HasOne(ua => ua.UserTest)
                 .WithMany(ut => ut.UserAnswers)
                 .HasForeignKey(ua => ua.UserTestId)
-                .OnDelete(DeleteBehavior.Restrict); // Hoặc .NoAction để tránh CASCADE
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserAnswer>()
                 .HasOne(ua => ua.Question)
                 .WithMany(q => q.UserAnswers)
                 .HasForeignKey(ua => ua.QuestionId)
-                .OnDelete(DeleteBehavior.NoAction); // Nếu bạn cần cascade ở đây
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<UserAnswer>()
                 .HasOne(ua => ua.AnswerOption)
                 .WithMany(ao => ao.UserAnswers)
                 .HasForeignKey(ua => ua.AnswerOptionId)
-                .OnDelete(DeleteBehavior.SetNull); // hoặc Restrict tùy ý bạn
-        }
+                .OnDelete(DeleteBehavior.SetNull);
 
+            // Configure Payment-Appointment relationship
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Appointment)
+                .WithOne(a => a.Payment)
+                .HasForeignKey<Appointment>(a => a.PaymentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure Payment-UserSubscription relationship
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Subscription)
+                .WithOne(s => s.Payment)
+                .HasForeignKey<UserSubscription>(s => s.PaymentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

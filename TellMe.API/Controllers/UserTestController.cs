@@ -89,5 +89,20 @@ namespace TellMe.API.Controllers
                 Data = history
             });
         }
+
+        [HttpGet("{userTestID}")]
+        [Authorize]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserTestDetail(Guid userTestID)
+        {
+            var response = await _userTestService.GetUserTestDetailAsync(userTestID);
+            return Ok(new ResponseObject
+            {
+                Status = HttpStatusCode.OK,
+                Message = "Successfully retrieved user test history",
+                Data = response
+            });
+        }
     }
 }

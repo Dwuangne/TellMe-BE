@@ -43,10 +43,8 @@ namespace TellMe.Repository.Enities
 
         public DateTime PaymentDate { get; set; }
 
-        [ForeignKey("AppointmentId")]
         public virtual Appointment? Appointment { get; set; }
 
-        [ForeignKey("SubscriptionId")]
         public virtual UserSubscription? Subscription { get; set; }
 
         public bool IsActive { get; set; } = true;

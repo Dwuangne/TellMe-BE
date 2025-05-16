@@ -35,6 +35,10 @@
             public const string UserTestEndpoint = ApiEndPoint + "/user-test";
         }
 
+        public static class Psychologist
+        {
+            public const string PsychologistEndpoint = ApiEndPoint + "/psychologist";
+        }
         public static class PsychologistReview
         {
             public const string PsychologistReviewEndpoint = ApiEndPoint + "/psychologist-reviews";
