@@ -135,14 +135,14 @@ namespace TellMe.Service.Services
             package.LastModifiedDate = DateTime.Now;
 
             // If deactivating, check for active subscriptions
-            if (!request.IsActive && package.IsActive)
-            {
-                var activeSubscriptions = await _unitOfWork.UserSubscriptionRepository
-                    .FirstOrDefaultAsync(us => us.PackageId == id && us.IsActive);
+            //if (!request.IsActive && package.IsActive)
+            //{
+            //    var activeSubscriptions = await _unitOfWork.UserSubscriptionRepository
+            //        .FirstOrDefaultAsync(us => us.PackageId == id && us.IsActive);
                 
-                if (activeSubscriptions != null)
-                    throw new InvalidOperationException("Cannot deactivate package with active subscriptions");
-            }
+            //    if (activeSubscriptions != null)
+            //        throw new InvalidOperationException("Cannot deactivate package with active subscriptions");
+            //}
 
             _unitOfWork.SubscriptionPackageRepository.Update(package);
             await _unitOfWork.CommitAsync();
