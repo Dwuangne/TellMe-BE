@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TellMe.API.Constants;
+using TellMe.Repository.Enums;
 using TellMe.Service.Models;
+using TellMe.Service.Models.RequestModels;
 using TellMe.Service.Models.ResponseModels;
 using TellMe.Service.Services.Interface;
 
@@ -22,65 +24,139 @@ namespace TellMe.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePaymentUrlVnpay(PaymentInformationModel model)
-        {
-            var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
-
-            if (string.IsNullOrEmpty(url))
-            {
-                return BadRequest(new ResponseObject
-                {
-                    Status = HttpStatusCode.BadRequest,
-                    Message = "Failed to create payment URL",
-                    Data = null
-                });
-            }
-
-            return Ok(new ResponseObject
-            {
-                Status = HttpStatusCode.OK,
-                Message = "Successfully created payment URL",
-                Data = url
-            });
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> PaymentCallbackVnpay()
-        {
-            var response = _vnPayService.PaymentExecute(Request.Query);
-
-            if (response == null)
-            {
-                return BadRequest(new ResponseObject
-                {
-                    Status = HttpStatusCode.BadRequest,
-                    Message = "Invalid payment response",
-                    Data = null
-                });
-            }
-
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Get all payments (Admin only)
-        /// </summary>
-        [HttpGet("all")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(ResponseObject), 200)]
-        [ProducesResponseType(typeof(ResponseObject), 401)]
-        [ProducesResponseType(typeof(ResponseObject), 404)]
-        public async Task<IActionResult> GetAllPayments([FromQuery] Guid? userId)
+        [Authorize]
+        //[AllowAnonymous]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreatePaymentUrlVnpay(CreatePaymentRequest model)
         {
             try
             {
-                var payments = await _paymentService.GetAllPaymentsAsync(userId);
+                if (model == null)
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Payment request cannot be null",
+                        Data = null
+                    });
+                }
+
+                if (!model.IsValid())
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Invalid payment request. Either AppointmentId or UserSubscriptionId must be provided, but not both.",
+                        Data = null
+                    });
+                }
+
+                var url = await _vnPayService.CreatePaymentUrl(model, HttpContext);
+
+                if (string.IsNullOrEmpty(url))
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Failed to create payment URL",
+                        Data = null
+                    });
+                }
+
                 return Ok(new ResponseObject
                 {
                     Status = HttpStatusCode.OK,
-                    Message = "Successfully retrieved all payments",
-                    Data = payments
+                    Message = "Successfully created payment URL",
+                    Data = url
                 });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseObject
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ResponseObject
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseObject
+                {
+                    Status = HttpStatusCode.InternalServerError,
+                    Message = "An unexpected error occurred while processing your payment request",
+                    Data = null
+                });
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        //[AllowAnonymous]
+        [ProducesResponseType(typeof(ResponseObject), 200)]
+        [ProducesResponseType(typeof(ResponseObject), 401)]
+        [ProducesResponseType(typeof(ResponseObject), 404)]
+        public async Task<IActionResult> PaymentCallbackVnpay()
+        {
+            try
+            {
+                var txnRef = HttpContext.Request.Query["vnp_TxnRef"].ToString();
+
+                if (string.IsNullOrWhiteSpace(txnRef) || !txnRef.Contains('-'))
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Transaction reference is invalid or missing",
+                        Data = null
+                    });
+                }
+
+                var paymentIdString = txnRef.Split('|')[0];
+
+                var response = await _vnPayService.PaymentExecute(Request.Query, paymentIdString);
+
+                if (response == null)
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Invalid payment response",
+                        Data = null
+                    });
+                }
+
+                if (response.Status == PaymentStatus.Success)
+                {
+                    return Ok(new ResponseObject
+                    {
+                        Status = HttpStatusCode.OK,
+                        Message = "Payment processed successfully",
+                        Data = response
+                    });
+                }
+                else
+                {
+                    // 402 Payment Required for failed payment
+                    return StatusCode((int)HttpStatusCode.PaymentRequired, new ResponseObject
+                    {
+                        Status = HttpStatusCode.PaymentRequired,
+                        Message = "Payment failed",
+                        Data = response
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -92,6 +168,7 @@ namespace TellMe.API.Controllers
                 });
             }
         }
+
 
         /// <summary>
         /// Get payment by ID
@@ -115,11 +192,11 @@ namespace TellMe.API.Controllers
             }
 
             // Verify the user has access to this payment
-            var userId = Guid.Parse(User.FindFirst("UserId")?.Value ?? string.Empty);
-            if (payment.UserId != userId && !User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
+            //var userId = Guid.Parse(User.FindFirst("UserId")?.Value ?? string.Empty);
+            //if (payment.UserId != userId && !User.IsInRole("Admin"))
+            //{
+            //    return Forbid();
+            //}
 
             return Ok(new ResponseObject
             {

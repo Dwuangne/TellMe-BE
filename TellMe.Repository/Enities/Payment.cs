@@ -26,7 +26,7 @@ namespace TellMe.Repository.Enities
 
         public Guid? AppointmentId { get; set; }
 
-        public Guid? SubscriptionId { get; set; }
+        public Guid? UserSubscriptionId { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
@@ -45,7 +45,7 @@ namespace TellMe.Repository.Enities
 
         public virtual Appointment? Appointment { get; set; }
 
-        public virtual UserSubscription? Subscription { get; set; }
+        public virtual UserSubscription? UserSubscription { get; set; }
 
         public bool IsActive { get; set; } = true;
     }

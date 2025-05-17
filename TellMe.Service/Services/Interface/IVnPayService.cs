@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TellMe.Service.Models.RequestModels;
+using TellMe.Service.Models.ResponseModels;
 
 namespace TellMe.Service.Services.Interface
 {
     public interface IVnPayService
     {
-        string CreatePaymentUrl(PaymentInformationModel model, HttpContext context);
-        PaymentResponseModel PaymentExecute(IQueryCollection collections);
+        Task<string> CreatePaymentUrl(CreatePaymentRequest model, HttpContext context);
+        Task<PaymentResponse> PaymentExecute(IQueryCollection collections, string paymentId);
 
     }
 }

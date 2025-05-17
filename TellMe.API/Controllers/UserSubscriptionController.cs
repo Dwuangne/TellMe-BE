@@ -65,11 +65,11 @@ namespace TellMe.API.Controllers
                 });
             }
 
-            var userId = Guid.Parse(User.FindFirst("UserId")?.Value!);
-            if (subscription.UserId != userId && !User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
+            //var userId = Guid.Parse(User.FindFirst("UserId")?.Value!);
+            //if (subscription.UserId != userId && !User.IsInRole("Admin"))
+            //{
+            //    return Forbid();
+            //}
 
             return Ok(new ResponseObject
             {

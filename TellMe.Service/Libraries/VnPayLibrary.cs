@@ -1,9 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using TellMe.Repository.Enities;
+using TellMe.Repository.Enums;
+using TellMe.Repository.Infrastructures;
+using TellMe.Service.Models.ResponseModels;
+using TellMe.Service.Services.Interface;
 
 namespace TellMe.Service.Libraries
 {
@@ -12,40 +18,8 @@ namespace TellMe.Service.Libraries
         private readonly SortedList<string, string> _requestData = new SortedList<string, string>(new VnPayCompare());
         private readonly SortedList<string, string> _responseData = new SortedList<string, string>(new VnPayCompare());
 
-        public PaymentResponseModel GetFullResponseData(IQueryCollection collection, string hashSecret)
+        public VnPayLibrary()
         {
-            var vnPay = new VnPayLibrary();
-            foreach (var (key, value) in collection)
-            {
-                if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
-                {
-                    vnPay.AddResponseData(key, value);
-                }
-            }
-            var orderId = Convert.ToInt64(vnPay.GetResponseData("vnp_TxnRef"));
-            var vnPayTranId = Convert.ToInt64(vnPay.GetResponseData("vnp_TransactionNo"));
-            var vnpResponseCode = vnPay.GetResponseData("vnp_ResponseCode");
-            var vnpSecureHash =
-                collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value; //hash của dữ liệu trả về
-            var orderInfo = vnPay.GetResponseData("vnp_OrderInfo");
-            var checkSignature =
-                vnPay.ValidateSignature(vnpSecureHash, hashSecret); //check Signature
-            if (!checkSignature)
-                return new PaymentResponseModel()
-                {
-                    Success = false
-                };
-            return new PaymentResponseModel()
-            {
-                Success = true,
-                PaymentMethod = "VnPay",
-                OrderDescription = orderInfo,
-                OrderId = orderId.ToString(),
-                PaymentId = vnPayTranId.ToString(),
-                TransactionId = vnPayTranId.ToString(),
-                Token = vnpSecureHash,
-                VnPayResponseCode = vnpResponseCode
-            };
         }
 
         public string GetIpAddress(HttpContext context)
@@ -186,21 +160,5 @@ public class VnPayCompare : IComparer<string>
     }
 }
 
-public class PaymentInformationModel
-{
-    public string OrderType { get; set; }
-    public double Amount { get; set; }
-    public string OrderDescription { get; set; }
-    public string Name { get; set; }
-}
-public class PaymentResponseModel
-{
-    public string OrderDescription { get; set; }
-    public string TransactionId { get; set; }
-    public string OrderId { get; set; }
-    public string PaymentMethod { get; set; }
-    public string PaymentId { get; set; }
-    public bool Success { get; set; }
-    public string Token { get; set; }
-    public string VnPayResponseCode { get; set; }
-}
+
+

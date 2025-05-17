@@ -18,5 +18,6 @@ namespace TellMe.Service.Services.Interface
         Task<bool> IsSubscriptionActiveAsync(Guid userId);
         Task<IEnumerable<UserSubscriptionResponse>> GetAllSubscriptionAsync(Guid? userId = null);
         Task<UserSubscriptionResponse?> GetActiveSubscriptionAsync(Guid userId);
+        Task<bool> UpdatePaymentIdAfterPaymentAsync(Guid? subscriptionId, Guid paymentId);
     }
 }

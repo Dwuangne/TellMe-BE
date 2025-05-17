@@ -20,6 +20,10 @@ namespace TellMe.Service.Mapping
             CreateMap<UpdatePsychologicalTestRequest, PsychologicalTest>().ReverseMap();
             CreateMap<SubmitUserTestRequest, UserTest>().ReverseMap();
             CreateMap<UserAnswerSubmission, UserAnswer>().ReverseMap();
+            CreateMap<SubscriptionPackage, CreatePackageRequest>().ReverseMap();
+            CreateMap<SubscriptionPackage, UpdatePackageRequest>().ReverseMap();
+            CreateMap<Appointment, CreateAppointmentRequest>().ReverseMap();
+            CreateMap<Appointment, UpdateAppointmentRequest>().ReverseMap();
 
             CreateMap<AnswerOption, AnswerOptionResponse>().ReverseMap();
             CreateMap<PsychologicalTest, PsychologicalTestResponse>().ReverseMap();
