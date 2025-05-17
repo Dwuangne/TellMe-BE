@@ -64,7 +64,7 @@ namespace TellMe.Repository.DBContexts
 
             // Configure Payment-UserSubscription relationship
             modelBuilder.Entity<Payment>()
-                .HasOne(p => p.Subscription)
+                .HasOne(p => p.UserSubscription)
                 .WithOne(s => s.Payment)
                 .HasForeignKey<UserSubscription>(s => s.PaymentId)
                 .OnDelete(DeleteBehavior.Restrict);

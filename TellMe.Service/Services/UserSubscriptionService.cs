@@ -137,7 +137,7 @@ namespace TellMe.Service.Services
             return await MapToResponseAsync(subscription);
         }
 
-        public async Task<bool> UpdatePaymentIdAfterPaymentAsync(Guid subscriptionId, Guid paymentId)
+        public async Task<bool> UpdatePaymentIdAfterPaymentAsync(Guid? subscriptionId, Guid paymentId)
         {
             var subscription = await _unitOfWork.UserSubscriptionRepository.GetByIdAsync(subscriptionId);
             if (subscription == null)

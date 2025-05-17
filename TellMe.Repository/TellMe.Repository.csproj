@@ -19,8 +19,4 @@
     <PackageReference Include="Redis.OM" Version="0.8.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\TellMeDB\" />
-  </ItemGroup>
-
 </Project>
