@@ -27,7 +27,7 @@ namespace TellMe.Service.Services
         public async Task<UserSubscriptionResponse> CreateSubscriptionAsync(Guid userId, CreateUserSubscriptionRequest request)
         {
             // Validate if user already has an active subscription
-            var activeSubscription = await GetActiveSubscriptionAsync(userId);
+            var activeSubscription = await GetActiveSubscriptionAsync(userId, request.PackageId);
             if (activeSubscription != null)
                 throw new InvalidOperationException("User already has an active subscription");
 
@@ -73,6 +73,17 @@ namespace TellMe.Service.Services
         {
             var subscription = await _unitOfWork.UserSubscriptionRepository
                 .FirstOrDefaultAsync(s => s.UserId == userId &&
+                                        s.IsActive &&
+                                        s.EndDate > DateTime.Now);
+
+            return subscription == null ? null : await MapToResponseAsync(subscription);
+        }
+
+        public async Task<UserSubscriptionResponse?> GetActiveSubscriptionAsync(Guid userId, int packageId)
+        {
+            var subscription = await _unitOfWork.UserSubscriptionRepository
+                .FirstOrDefaultAsync(s => s.UserId == userId &&
+                                        s.PackageId == packageId &&
                                         s.IsActive &&
                                         s.EndDate > DateTime.Now);
 

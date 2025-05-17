@@ -26,6 +26,9 @@ namespace TellMe.Service.Models.RequestModels
         public string? Features { get; set; }
 
         public int Price { get; set; }
+
+        [Required]
+        public string PackageType { get; set; } = string.Empty;
     }
 
     public class UpdatePackageRequest : CreatePackageRequest
