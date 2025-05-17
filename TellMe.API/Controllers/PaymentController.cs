@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TellMe.API.Constants;
+using TellMe.Repository.Enums;
 using TellMe.Service.Models;
 using TellMe.Service.Models.RequestModels;
 using TellMe.Service.Models.ResponseModels;
@@ -109,7 +110,7 @@ namespace TellMe.API.Controllers
         [ProducesResponseType(typeof(ResponseObject), 404)]
         public async Task<IActionResult> PaymentCallbackVnpay()
         {
-            try 
+            try
             {
                 var txnRef = HttpContext.Request.Query["vnp_TxnRef"].ToString();
 
@@ -137,12 +138,25 @@ namespace TellMe.API.Controllers
                     });
                 }
 
-                return Ok(new ResponseObject
+                if (response.Status == PaymentStatus.Success)
                 {
-                    Status = HttpStatusCode.OK,
-                    Message = "Payment processed successfully",
-                    Data = response
-                });
+                    return Ok(new ResponseObject
+                    {
+                        Status = HttpStatusCode.OK,
+                        Message = "Payment processed successfully",
+                        Data = response
+                    });
+                }
+                else
+                {
+                    // 402 Payment Required for failed payment
+                    return StatusCode((int)HttpStatusCode.PaymentRequired, new ResponseObject
+                    {
+                        Status = HttpStatusCode.PaymentRequired,
+                        Message = "Payment failed",
+                        Data = response
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -154,6 +168,7 @@ namespace TellMe.API.Controllers
                 });
             }
         }
+
 
         /// <summary>
         /// Get payment by ID
