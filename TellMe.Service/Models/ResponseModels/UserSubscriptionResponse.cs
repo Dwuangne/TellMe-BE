@@ -17,6 +17,8 @@ namespace TellMe.Service.Models.ResponseModels
         public bool IsActive { get; set; }
         public string PackageName { get; set; } = string.Empty;
         public string? PackageDescription { get; set; }
+
+        public string? Features { get; set; }
         public int Duration { get; set; }
         public DurationUnit DurationUnit { get; set; }
         public PaymentResponse? Payment { get; set; }
