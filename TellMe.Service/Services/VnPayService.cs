@@ -228,6 +228,7 @@ namespace TellMe.Service.Services
                         EndDate = subscription.EndDate,
                         PackageName = package?.PackageName ?? "Unknown Package",
                         Price = package?.Price ?? 0,
+                        PackageType = package?.PackageType ?? "Unknown",
                         IsActive = subscription.IsActive
                     };
                 }

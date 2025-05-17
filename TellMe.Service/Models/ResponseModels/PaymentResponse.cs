@@ -40,6 +40,7 @@ namespace TellMe.Service.Models.ResponseModels
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string PackageName { get; set; } = string.Empty;
+        public string PackageType { get; set; } = string.Empty;
         public int Price { get; set; }
         public bool IsActive { get; set; }
     }
