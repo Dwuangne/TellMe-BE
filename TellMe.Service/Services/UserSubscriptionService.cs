@@ -163,6 +163,7 @@ namespace TellMe.Service.Services
                     response.PackageDescription = package.Description;
                     response.Duration = package.Duration;
                     response.DurationUnit = package.DurationUnit;
+                    response.Features = package.Features;
                 }
             }
             else
@@ -171,6 +172,7 @@ namespace TellMe.Service.Services
                 response.PackageDescription = subscription.Package.Description;
                 response.Duration = subscription.Package.Duration;
                 response.DurationUnit = subscription.Package.DurationUnit;
+                response.Features = subscription.Package.Features;
             }
 
             // Load payment details if available
