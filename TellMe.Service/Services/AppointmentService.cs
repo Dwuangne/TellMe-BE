@@ -19,12 +19,14 @@ namespace TellMe.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ITimeHelper _timeHelper;
 
-        public AppointmentService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public AppointmentService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager, ITimeHelper timeHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
+            _timeHelper = timeHelper;
         }
 
         public async Task<AppointmentResponse> CreateAppointmentAsync(Guid expertId, CreateAppointmentRequest request)
@@ -35,7 +37,7 @@ namespace TellMe.Service.Services
                 throw new ArgumentException("Expert not found");
 
             // Validate appointment time is in future
-            if (request.AppointmentDateTime <= DateTime.Now)
+            if (request.AppointmentDateTime <= _timeHelper.NowVietnam())
                 throw new ArgumentException("Appointment time must be in the future");
 
             // Check for conflicting appointments
@@ -53,13 +55,15 @@ namespace TellMe.Service.Services
             var appointment = new Appointment
             {
                 ExpertId = expertId,
-                AppointmentDateTime = request.AppointmentDateTime,
+                AppointmentDateTime = _timeHelper.NormalizeToVietnam(request.AppointmentDateTime),
                 DurationMinutes = request.DurationMinutes,
                 Notes = request.Notes,
                 Fee = request.Fee,
                 MeetingURL = request.MeetingURL,
                 Status = AppointmentStatus.Pending,
-                IsActive = true
+                IsActive = true,
+                CreatedAt = _timeHelper.NowVietnam(),
+                UpdatedAt = _timeHelper.NowVietnam(),
             };
 
             await _unitOfWork.AppointmentRepository.AddAsync(appointment);
@@ -100,7 +104,7 @@ namespace TellMe.Service.Services
             appointment.PaymentId = paymentId;
             appointment.IsPaid = true;
             appointment.Status = AppointmentStatus.Confirmed;
-            appointment.UpdatedAt = DateTime.Now;
+            appointment.UpdatedAt = _timeHelper.NowVietnam();
 
             _unitOfWork.AppointmentRepository.Update(appointment);
             await _unitOfWork.CommitAsync();
@@ -163,10 +167,10 @@ namespace TellMe.Service.Services
             // Update only provided fields
             if (request.AppointmentDateTime.HasValue)
             {
-                if (request.AppointmentDateTime.Value <= DateTime.Now)
+                if (request.AppointmentDateTime.Value <= _timeHelper.NowVietnam())
                     throw new ArgumentException("Appointment time must be in the future");
                 
-                appointment.AppointmentDateTime = request.AppointmentDateTime.Value;
+                appointment.AppointmentDateTime = _timeHelper.NormalizeToVietnam(request.AppointmentDateTime.Value);
             }
 
             if (request.DurationMinutes.HasValue)
@@ -183,7 +187,7 @@ namespace TellMe.Service.Services
             if (request.MeetingURL != null)
                 appointment.MeetingURL = request.MeetingURL;
 
-            appointment.UpdatedAt = DateTime.Now;
+            appointment.UpdatedAt = _timeHelper.NowVietnam();
 
             _unitOfWork.AppointmentRepository.Update(appointment);
             await _unitOfWork.CommitAsync();
@@ -198,7 +202,7 @@ namespace TellMe.Service.Services
                 throw new KeyNotFoundException("Appointment not found");
 
             appointment.Status = status;
-            appointment.UpdatedAt = DateTime.Now;
+            appointment.UpdatedAt = _timeHelper.NowVietnam();
 
             _unitOfWork.AppointmentRepository.Update(appointment);
             await _unitOfWork.CommitAsync();

@@ -27,6 +27,9 @@ var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 builder.Configuration.AddEnvironmentVariables();
 
+builder.Services.AddSingleton(TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
+
 //-------------------- Logging --------------------
 builder.Services.AddLogging(logging =>
 {

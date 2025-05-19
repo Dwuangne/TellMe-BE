@@ -17,12 +17,14 @@ namespace TellMe.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ITimeHelper _timeHelper;
 
-        public PsychologistReviewService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public PsychologistReviewService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager, ITimeHelper timeHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
+            _timeHelper = timeHelper;
         }
 
         public async Task<PsychologistReviewResponse> AddReviewAsync(Guid userId, Guid expertId, byte rating, string comment)
@@ -42,7 +44,9 @@ namespace TellMe.Service.Services
                 ExpertId = expertId,
                 Rating = rating,
                 Comment = comment,
-                IsActive = true
+                IsActive = true,
+                ReviewDate = _timeHelper.NowVietnam(),
+                ReviewDateUpdate = _timeHelper.NowVietnam()
             };
 
             await _unitOfWork.PsychologistReviewRepository.AddAsync(review);
@@ -58,7 +62,7 @@ namespace TellMe.Service.Services
                 return false;
 
             review.IsActive = false;
-            review.ReviewDateUpdate = DateTime.Now;
+            review.ReviewDateUpdate = _timeHelper.NowVietnam();
 
             _unitOfWork.PsychologistReviewRepository.Update(review);
             await _unitOfWork.CommitAsync();
@@ -73,7 +77,7 @@ namespace TellMe.Service.Services
                 return false;
 
             review.IsActive = true;
-            review.ReviewDateUpdate = DateTime.Now;
+            review.ReviewDateUpdate = _timeHelper.NowVietnam();
 
             _unitOfWork.PsychologistReviewRepository.Update(review);
             await _unitOfWork.CommitAsync();
@@ -117,7 +121,7 @@ namespace TellMe.Service.Services
 
             review.Rating = rating;
             review.Comment = comment;
-            review.ReviewDateUpdate = DateTime.Now;
+            review.ReviewDateUpdate = _timeHelper.NowVietnam();
 
             _unitOfWork.PsychologistReviewRepository.Update(review);
             await _unitOfWork.CommitAsync();
