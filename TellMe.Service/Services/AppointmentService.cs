@@ -161,16 +161,33 @@ namespace TellMe.Service.Services
             if (appointment == null || !appointment.IsActive)
                 throw new KeyNotFoundException("Appointment not found");
 
-            if (appointment.Status == AppointmentStatus.Completed)
+            if (appointment.Status == AppointmentStatus.Completed ||
+                appointment.Status == AppointmentStatus.Confirmed ||
+                appointment.Status == AppointmentStatus.Cancelled)
                 throw new InvalidOperationException("Cannot update completed appointment");
 
             // Update only provided fields
             if (request.AppointmentDateTime.HasValue)
             {
+                var newTime = _timeHelper.NormalizeToVietnam(request.AppointmentDateTime.Value);
+
                 if (request.AppointmentDateTime.Value <= _timeHelper.NowVietnam())
                     throw new ArgumentException("Appointment time must be in the future");
-                
-                appointment.AppointmentDateTime = _timeHelper.NormalizeToVietnam(request.AppointmentDateTime.Value);
+
+                // Check trùng lịch với các appointment khác của cùng expert (trừ chính nó)
+                var conflicting = await _unitOfWork.AppointmentRepository.FirstOrDefaultAsync(
+                    a => a.Id != appointment.Id && // loại trừ chính nó
+                         a.ExpertId == appointment.ExpertId &&
+                         a.IsActive &&
+                         a.Status != AppointmentStatus.Cancelled &&
+                         a.AppointmentDateTime < newTime.AddMinutes(request.DurationMinutes ?? appointment.DurationMinutes) &&
+                         newTime < a.AppointmentDateTime.AddMinutes(a.DurationMinutes)
+                );
+
+                if (conflicting != null)
+                    throw new InvalidOperationException("Time slot is not available");
+
+                appointment.AppointmentDateTime = newTime;
             }
 
             if (request.DurationMinutes.HasValue)
