@@ -19,13 +19,15 @@ namespace TellMe.Service.Services
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly IRedisService _redisService;
+        private readonly ITimeHelper _timeHelper;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService tokenService, IEmailService emailService, IRedisService redisService)
+        public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService tokenService, IEmailService emailService, IRedisService redisService, ITimeHelper timeHelper)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _emailService = emailService;
             _redisService = redisService;
+            _timeHelper = timeHelper;
         }
 
         public async Task<bool> ConfirmEmailAsync(string userId, string token)
@@ -335,6 +337,7 @@ namespace TellMe.Service.Services
                     UserName = registerRequest.Email,
                     Email = registerRequest.Email,
                     FullName = registerRequest.FullName,
+                    RegistrationDate = _timeHelper.NowVietnam(),
                     EmailConfirmed = false,
                     LockoutEnabled = false,
                 };

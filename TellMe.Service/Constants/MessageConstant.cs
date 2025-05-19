@@ -57,6 +57,11 @@ namespace TellMe.Service.Constants
                 public const string EmailNotVerified = "Email is not verified.";
                 public const string AccountDisabled = "Account is disabled.";
             }
+            public static class UpdateProfile
+            {
+                public const string UserNotFound = "User not found.";
+                public const string UpdateFailed = "Failed to update profile.";
+            }
         }
 
         public static class Email
