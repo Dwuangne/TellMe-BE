@@ -59,7 +59,7 @@ namespace TellMe.Service.Services
                 throw new InvalidOperationException("Cannot delete package with active subscriptions");
 
             package.IsActive = false;
-            package.LastModifiedDate = DateTime.Now;
+            package.LastModifiedDate = _timeHelper.NowVietnam();
 
             _unitOfWork.SubscriptionPackageRepository.Update(package);
             await _unitOfWork.CommitAsync();
@@ -110,7 +110,7 @@ namespace TellMe.Service.Services
                 throw new InvalidOperationException("An active package with this name already exists");
 
             package.IsActive = true;
-            package.LastModifiedDate = DateTime.Now;
+            package.LastModifiedDate = _timeHelper.NowVietnam();
 
             _unitOfWork.SubscriptionPackageRepository.Update(package);
             await _unitOfWork.CommitAsync();
@@ -136,7 +136,7 @@ namespace TellMe.Service.Services
 
             // Update package properties
             _mapper.Map(request, package);
-            package.LastModifiedDate = DateTime.Now;
+            package.LastModifiedDate = _timeHelper.NowVietnam();
 
             // If deactivating, check for active subscriptions
             //if (!request.IsActive && package.IsActive)
