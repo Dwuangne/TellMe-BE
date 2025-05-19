@@ -17,11 +17,13 @@ namespace TellMe.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ITimeHelper _timeHelper;
 
-        public UserSubscriptionService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserSubscriptionService(IUnitOfWork unitOfWork, IMapper mapper, ITimeHelper timeHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _timeHelper = timeHelper;
         }
 
         public async Task<UserSubscriptionResponse> CreateSubscriptionAsync(Guid userId, CreateUserSubscriptionRequest request)
@@ -45,8 +47,8 @@ namespace TellMe.Service.Services
             {
                 UserId = userId,
                 PackageId = request.PackageId,
-                StartDate = DateTime.Now,
-                EndDate = CalculateEndDate(DateTime.Now, package.Duration, package.DurationUnit),
+                StartDate = _timeHelper.NowVietnam(),
+                EndDate = CalculateEndDate(_timeHelper.NowVietnam(), package.Duration, package.DurationUnit),
                 IsActive = true
             };
 

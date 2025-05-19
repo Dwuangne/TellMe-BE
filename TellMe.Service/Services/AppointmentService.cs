@@ -83,7 +83,7 @@ namespace TellMe.Service.Services
 
             appointment.Status = AppointmentStatus.Cancelled;
             appointment.IsActive = false;
-            appointment.UpdatedAt = DateTime.Now;
+            appointment.UpdatedAt = _timeHelper.NowVietnam();
 
             _unitOfWork.AppointmentRepository.Update(appointment);
             await _unitOfWork.CommitAsync();

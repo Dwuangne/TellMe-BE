@@ -21,12 +21,14 @@ namespace TellMe.Service.Services
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserSubscriptionService _userSubscriptionService;
+        private readonly ITimeHelper _timeHelper;
 
-        public VnPayService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserSubscriptionService userSubscriptionService)
+        public VnPayService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserSubscriptionService userSubscriptionService, ITimeHelper timeHelper)
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
             _userSubscriptionService = userSubscriptionService;
+            _timeHelper = timeHelper;
         }
 
         public async Task<string> CreatePaymentUrl(CreatePaymentRequest model, HttpContext context)
@@ -47,7 +49,8 @@ namespace TellMe.Service.Services
                         AppointmentId = model.AppointmentId.HasValue ? model.AppointmentId : null,
                         UserSubscriptionId = model.UserSubscriptionId.HasValue ? model.UserSubscriptionId : null,
                         PaymentMethod = model.PaymentMethod,
-                        Status = Repository.Enums.PaymentStatus.Pending
+                        Status = Repository.Enums.PaymentStatus.Pending,
+                        PaymentDate = _timeHelper.NowVietnam()
                     };
                     await _unitOfWork.PaymentRepository.AddAsync(payment);
                     await _unitOfWork.CommitAsync();
@@ -67,7 +70,8 @@ namespace TellMe.Service.Services
                     AppointmentId = model.AppointmentId.HasValue ? model.AppointmentId : null,
                     UserSubscriptionId = model.UserSubscriptionId.HasValue ? model.UserSubscriptionId : null,
                     PaymentMethod = model.PaymentMethod,
-                    Status = Repository.Enums.PaymentStatus.Pending
+                    Status = Repository.Enums.PaymentStatus.Pending,
+                    PaymentDate = _timeHelper.NowVietnam()
                 };
                 await _unitOfWork.PaymentRepository.AddAsync(payment);
                 await _unitOfWork.CommitAsync();
@@ -147,7 +151,7 @@ namespace TellMe.Service.Services
                         {
                             appointment.Status = AppointmentStatus.Confirmed;
                             appointment.IsPaid = true;
-                            appointment.UpdatedAt = DateTime.Now;
+                            appointment.UpdatedAt = _timeHelper.NowVietnam();
                             appointment.PaymentId = payment.Id;
                             _unitOfWork.AppointmentRepository.Update(appointment);
                         }
