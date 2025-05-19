@@ -16,11 +16,13 @@ namespace TellMe.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ITimeHelper _timeHelper;
 
-        public SubscriptionPackageService(IUnitOfWork unitOfWork, IMapper mapper)
+        public SubscriptionPackageService(IUnitOfWork unitOfWork, IMapper mapper, ITimeHelper timeHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _timeHelper = timeHelper;
         }
 
         public async Task<SubscriptionPackageResponse> CreatePackageAsync(CreatePackageRequest request)
@@ -34,6 +36,8 @@ namespace TellMe.Service.Services
 
             var package = _mapper.Map<SubscriptionPackage>(request);
             package.IsActive = true;
+            package.CreatedDate = _timeHelper.NowVietnam();
+            package.LastModifiedDate = _timeHelper.NowVietnam();
 
             await _unitOfWork.SubscriptionPackageRepository.AddAsync(package);
             await _unitOfWork.CommitAsync();
