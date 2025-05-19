@@ -19,17 +19,21 @@ namespace TellMe.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ITimeHelper _timeHelper;
 
-        public PsychologicalTestService(IUnitOfWork unitOfWork, IMapper mapper)
+        public PsychologicalTestService(IUnitOfWork unitOfWork, IMapper mapper, ITimeHelper timeHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _timeHelper = timeHelper;
         }
 
         public async Task<PsychologicalTestResponse> CreateTestAsync(CreatePsychologicalTestRequest request)
         {
             // Map request to entity
             var testEntity = _mapper.Map<PsychologicalTest>(request);
+            testEntity.CreatedAt = _timeHelper.NowVietnam();
+            testEntity.UpdatedAt = _timeHelper.NowVietnam();
 
             // Add to database
             await _unitOfWork.PsychologicalTestRepository.AddAsync(testEntity);
@@ -59,7 +63,7 @@ namespace TellMe.Service.Services
             existingTest.Description = request.Description;
             existingTest.PsychologicalTestType = request.PsychologicalTestType;
             existingTest.Duration = request.Duration;
-            existingTest.UpdatedAt = DateTime.Now; // Sử dụng UTC để đồng bộ thời gian
+            existingTest.UpdatedAt = _timeHelper.NowVietnam(); // Sử dụng UTC để đồng bộ thời gian
 
             var entityTest = _mapper.Map<PsychologicalTest>(request);
             //// Đồng bộ hóa các câu hỏi
@@ -85,7 +89,7 @@ namespace TellMe.Service.Services
                     // Cập nhật các thuộc tính cơ bản
                     existingQuestion.Content = question.Content;
                     existingQuestion.Order = question.Order;
-                    existingQuestion.UpdatedAt = DateTime.Now;
+                    existingQuestion.UpdatedAt = _timeHelper.NowVietnam();
 
                     // Đồng bộ hóa các tùy chọn trả lời
                     var optionSync = CollectionSyncHelper.SyncCollections(
@@ -111,7 +115,7 @@ namespace TellMe.Service.Services
                             existingOption.Content = option.Content;
                             existingOption.Order = option.Order;
                             existingOption.Score = option.Score;
-                            existingOption.UpdatedAt = DateTime.Now;
+                            existingOption.UpdatedAt = _timeHelper.NowVietnam();
                         }
                     }
 
@@ -122,7 +126,7 @@ namespace TellMe.Service.Services
                         if (existingOption != null)
                         {
                             existingOption.IsDeleted = true;
-                            existingOption.UpdatedAt = DateTime.Now;
+                            existingOption.UpdatedAt = _timeHelper.NowVietnam();
                         }
                     }
                 }
@@ -135,11 +139,11 @@ namespace TellMe.Service.Services
                 if (existingQuestion != null)
                 {
                     existingQuestion.IsDeleted = true;
-                    existingQuestion.UpdatedAt = DateTime.Now;
+                    existingQuestion.UpdatedAt = _timeHelper.NowVietnam();
                     foreach (var option in existingQuestion.AnswerOptions)
                     {
                         option.IsDeleted = true;
-                        option.UpdatedAt = DateTime.Now;
+                        option.UpdatedAt = _timeHelper.NowVietnam();
                     }
                 }
             }
@@ -186,18 +190,18 @@ namespace TellMe.Service.Services
 
             // Đánh dấu bài kiểm tra là không hoạt động (xóa mềm)
             test.IsActive = false;
-            test.UpdatedAt = DateTime.Now;
+            test.UpdatedAt = _timeHelper.NowVietnam();
 
             // Đánh dấu tất cả câu hỏi và tùy chọn trả lời liên quan là đã xóa
             foreach (var question in test.Questions)
             {
                 question.IsDeleted = true;
-                question.UpdatedAt = DateTime.Now;
+                question.UpdatedAt = _timeHelper.NowVietnam();
 
                 foreach (var option in question.AnswerOptions)
                 {
                     option.IsDeleted = true;
-                    option.UpdatedAt = DateTime.Now;
+                    option.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
 

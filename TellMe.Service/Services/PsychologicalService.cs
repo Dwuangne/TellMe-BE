@@ -17,11 +17,13 @@ namespace TellMe.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ITimeHelper _timeHelper;
 
-        public PsychologicalService(IUnitOfWork unitOfWork, IMapper mapper)
+        public PsychologicalService(IUnitOfWork unitOfWork, IMapper mapper, ITimeHelper timeHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _timeHelper = timeHelper;
         }
 
         public async Task<PsychologistResponse> CreatePsychologistAsync(PsychologistCreateRequest request)
@@ -31,6 +33,8 @@ namespace TellMe.Service.Services
             
             // Set default values
             psychologistEntity.IsVerified = false;
+            psychologistEntity.CreatedAt = _timeHelper.NowVietnam();
+            psychologistEntity.UpdatedAt = _timeHelper.NowVietnam();
 
             // Add to database
             await _unitOfWork.PsychologistRepository.AddAsync(psychologistEntity);
@@ -59,25 +63,25 @@ namespace TellMe.Service.Services
             foreach (var education in psychologist.Educations)
             {
                 education.IsDeleted = true;
-                education.UpdatedAt = DateTime.Now;
+                education.UpdatedAt = _timeHelper.NowVietnam();
             }
 
             // Mark experiences as deleted
             foreach (var experience in psychologist.Experiences)
             {
                 experience.IsDeleted = true;
-                experience.UpdatedAt = DateTime.Now;
+                experience.UpdatedAt = _timeHelper.NowVietnam();
             }
 
             // Mark licenses as deleted
             foreach (var license in psychologist.Licenses)
             {
                 license.IsDeleted = true;
-                license.UpdatedAt = DateTime.Now;
+                license.UpdatedAt = _timeHelper.NowVietnam();
             }
 
             // Update the entity (soft delete could be implemented if IsDeleted exists on Psychologist)
-            psychologist.UpdatedAt = DateTime.Now;
+            psychologist.UpdatedAt = _timeHelper.NowVietnam();
             _unitOfWork.PsychologistRepository.Update(psychologist);
             
             await _unitOfWork.CommitAsync();
@@ -165,7 +169,7 @@ namespace TellMe.Service.Services
             existingPsychologist.DateOfBirth = request.DateOfBirth;
             existingPsychologist.Bio = request.Bio;
             existingPsychologist.AvatarUrl = request.AvatarUrl;
-            existingPsychologist.UpdatedAt = DateTime.Now;
+            existingPsychologist.UpdatedAt = _timeHelper.NowVietnam();
 
             // Create entity from request for syncing collections
             var entityPsychologist = new Psychologist
@@ -202,7 +206,7 @@ namespace TellMe.Service.Services
                     existingEducation.EndDate = education.EndDate;
                     existingEducation.Description = education.Description;
                     existingEducation.CertificateFile = education.CertificateFile;
-                    existingEducation.UpdatedAt = DateTime.Now;
+                    existingEducation.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
 
@@ -213,7 +217,7 @@ namespace TellMe.Service.Services
                 if (existingEducation != null)
                 {
                     existingEducation.IsDeleted = true;
-                    existingEducation.UpdatedAt = DateTime.Now;
+                    existingEducation.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
 
@@ -243,7 +247,7 @@ namespace TellMe.Service.Services
                     existingExperience.EndDate = experience.EndDate;
                     existingExperience.IsCurrent = experience.IsCurrent;
                     existingExperience.Description = experience.Description;
-                    existingExperience.UpdatedAt = DateTime.Now;
+                    existingExperience.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
 
@@ -254,7 +258,7 @@ namespace TellMe.Service.Services
                 if (existingExperience != null)
                 {
                     existingExperience.IsDeleted = true;
-                    existingExperience.UpdatedAt = DateTime.Now;
+                    existingExperience.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
 
@@ -284,7 +288,7 @@ namespace TellMe.Service.Services
                     existingLicense.IssueDate = license.IssueDate;
                     existingLicense.ExpiryDate = license.ExpiryDate;
                     existingLicense.DocumentPath = license.DocumentPath;
-                    existingLicense.UpdatedAt = DateTime.Now;
+                    existingLicense.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
 
@@ -295,7 +299,7 @@ namespace TellMe.Service.Services
                 if (existingLicense != null)
                 {
                     existingLicense.IsDeleted = true;
-                    existingLicense.UpdatedAt = DateTime.Now;
+                    existingLicense.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
 

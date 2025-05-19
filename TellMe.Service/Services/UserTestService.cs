@@ -19,11 +19,13 @@ namespace TellMe.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ITimeHelper _timeHelper;
 
-        public UserTestService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserTestService(IUnitOfWork unitOfWork, IMapper mapper, ITimeHelper timeHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _timeHelper = timeHelper;
         }
 
         public async Task<UserTestResponse> GetUserTestDetailAsync(Guid userTestId)
@@ -103,6 +105,7 @@ namespace TellMe.Service.Services
 
             // Update UserTest with final score
             userTest.TotalScore = totalScore;
+            userTest.CreatedAt = _timeHelper.NowVietnam();
 
             await _unitOfWork.UserTestRepository.AddAsync(userTest);
 
