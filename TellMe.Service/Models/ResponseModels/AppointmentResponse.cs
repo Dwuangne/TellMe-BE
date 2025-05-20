@@ -24,5 +24,6 @@ namespace TellMe.Service.Models.ResponseModels
         public bool IsPaid { get; set; }
         public bool IsActive { get; set; }
         public PaymentResponse? Payment { get; set; }
+        public ProfileResponse? User { get; set; }
     }
 }

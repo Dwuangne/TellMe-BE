@@ -238,6 +238,16 @@ namespace TellMe.Service.Services
                 response.ExpertName = expert.FullName;
             }
 
+            // Get user name if exists
+            if (appointment.UserId.HasValue)
+            {
+                var user = await _userManager.FindByIdAsync(appointment.UserId.Value.ToString());
+                if (user != null)
+                {
+                    response.User = _mapper.Map<ProfileResponse>(user);
+                }
+            }
+
             // Map payment if exists
             if (appointment.PaymentId.HasValue)
             {

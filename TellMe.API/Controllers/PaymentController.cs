@@ -16,6 +16,8 @@ namespace TellMe.API.Controllers
     {
         private readonly IPaymentService _paymentService;
         private readonly IVnPayService _vnPayService;
+        private readonly string paymentSuccessUrl = "http://localhost:5173/payment/success";
+        private readonly string paymentFailUrl = "http://localhost:5173/payment/fail";
 
         public PaymentController(IPaymentService paymentService, IVnPayService vnPayService)
         {
@@ -103,8 +105,8 @@ namespace TellMe.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        //[AllowAnonymous]
+        //[Authorize]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(ResponseObject), 200)]
         [ProducesResponseType(typeof(ResponseObject), 401)]
         [ProducesResponseType(typeof(ResponseObject), 404)]
@@ -116,12 +118,13 @@ namespace TellMe.API.Controllers
 
                 if (string.IsNullOrWhiteSpace(txnRef) || !txnRef.Contains('-'))
                 {
-                    return BadRequest(new ResponseObject
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Message = "Transaction reference is invalid or missing",
-                        Data = null
-                    });
+                    //return BadRequest(new ResponseObject
+                    //{
+                    //    Status = HttpStatusCode.BadRequest,
+                    //    Message = "Transaction reference is invalid or missing",
+                    //    Data = null
+                    //});
+                    return Redirect(paymentFailUrl);
                 }
 
                 var paymentIdString = txnRef.Split('|')[0];
@@ -130,32 +133,35 @@ namespace TellMe.API.Controllers
 
                 if (response == null)
                 {
-                    return BadRequest(new ResponseObject
-                    {
-                        Status = HttpStatusCode.BadRequest,
-                        Message = "Invalid payment response",
-                        Data = null
-                    });
+                    //return BadRequest(new ResponseObject
+                    //{
+                    //    Status = HttpStatusCode.BadRequest,
+                    //    Message = "Invalid payment response",
+                    //    Data = null
+                    //});
+                    return Redirect(paymentFailUrl);
                 }
 
                 if (response.Status == PaymentStatus.Success)
                 {
-                    return Ok(new ResponseObject
-                    {
-                        Status = HttpStatusCode.OK,
-                        Message = "Payment processed successfully",
-                        Data = response
-                    });
+                    //return Ok(new ResponseObject
+                    //{
+                    //    Status = HttpStatusCode.OK,
+                    //    Message = "Payment processed successfully",
+                    //    Data = response
+                    //});
+                    return Redirect(paymentSuccessUrl);
                 }
                 else
                 {
                     // 402 Payment Required for failed payment
-                    return StatusCode((int)HttpStatusCode.PaymentRequired, new ResponseObject
-                    {
-                        Status = HttpStatusCode.PaymentRequired,
-                        Message = "Payment failed",
-                        Data = response
-                    });
+                    //return StatusCode((int)HttpStatusCode.PaymentRequired, new ResponseObject
+                    //{
+                    //    Status = HttpStatusCode.PaymentRequired,
+                    //    Message = "Payment failed",
+                    //    Data = response
+                    //});
+                    return Redirect(paymentFailUrl);
                 }
             }
             catch (Exception ex)
