@@ -12,7 +12,7 @@ using TellMe.Repository.DBContexts;
 namespace TellMe.Repository.Migrations
 {
     [DbContext(typeof(TellMeAuthDBContext))]
-    [Migration("20250515100224_InitialCreate")]
+    [Migration("20250520154500_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -196,6 +196,14 @@ namespace TellMe.Repository.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Avatar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -233,6 +241,9 @@ namespace TellMe.Repository.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");

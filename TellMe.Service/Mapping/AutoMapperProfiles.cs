@@ -44,6 +44,7 @@ namespace TellMe.Service.Mapping
             CreateMap<Payment, PaymentResponse>().ReverseMap();
             CreateMap<UserSubscription, UserSubscriptionResponse>().ReverseMap();
             CreateMap<Appointment, AppointmentResponse>().ReverseMap();
+            CreateMap<ApplicationUser, ProfileResponse>().ReverseMap();
 
         }
     }
