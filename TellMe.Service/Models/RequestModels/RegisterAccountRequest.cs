@@ -20,6 +20,6 @@ namespace TellMe.Service.Models.RequestModels
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
         [Required]
-        public string[] Roles { get; set; } = new string[0];
+        public string[] RoleId { get; set; } = new string[0];
     }
 }

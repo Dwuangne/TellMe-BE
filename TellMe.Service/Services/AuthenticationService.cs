@@ -350,9 +350,9 @@ namespace TellMe.Service.Services
                 }
 
                 // Add roles if specified
-                if (registerRequest.Roles?.Any() == true)
+                if (registerRequest.RoleId?.Any() == true)
                 {
-                    identityResult = await _userManager.AddToRolesAsync(identityUser, registerRequest.Roles);
+                    identityResult = await _userManager.AddToRolesAsync(identityUser, registerRequest.RoleId);
                     if (!identityResult.Succeeded)
                     {
                         var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
