@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TellMe.API.Constants;
 using TellMe.Repository.Enums;
+using TellMe.Service.Exceptions;
 using TellMe.Service.Models;
 using TellMe.Service.Models.RequestModels;
 using TellMe.Service.Models.ResponseModels;
@@ -240,6 +241,59 @@ namespace TellMe.API.Controllers
                 {
                     Status = HttpStatusCode.BadRequest,
                     Message = ex.Message,
+                    Data = null
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get all payments (Admin only)
+        /// </summary>
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAllPayments([FromQuery] Guid? userId = null)
+        {
+            try
+            {
+                var payments = await _paymentService.GetAllPaymentsAsync(userId);
+
+                return Ok(new ResponseObject
+                {
+                    Status = HttpStatusCode.OK,
+                    Message = userId.HasValue
+                        ? $"Successfully retrieved all payments for user {userId}"
+                        : "Successfully retrieved all payments",
+                    Data = payments
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ResponseObject
+                {
+                    Status = HttpStatusCode.NotFound,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(new ResponseObject
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseObject
+                {
+                    Status = HttpStatusCode.InternalServerError,
+                    Message = "An error occurred while retrieving payments",
                     Data = null
                 });
             }
