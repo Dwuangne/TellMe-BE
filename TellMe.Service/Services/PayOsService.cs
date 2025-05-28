@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Net.payOS;
 using Net.payOS.Types;
@@ -23,12 +25,16 @@ namespace TellMe.Service.Services
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserSubscriptionService _userSubscriptionService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public PayOsService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserSubscriptionService userSubscriptionService)
+        public PayOsService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserSubscriptionService userSubscriptionService, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
             _userSubscriptionService = userSubscriptionService;
+            _userManager = userManager;
+            _mapper = mapper;
             _payOS = new PayOS(
                 _configuration["CheckOutPayOs:PAYOS_CLIENT_ID"],
                 _configuration["CheckOutPayOs:PAYOS_API_KEY"],
@@ -157,6 +163,7 @@ namespace TellMe.Service.Services
                             appointment.IsPaid = true;
                             appointment.UpdatedAt = DateTime.Now;
                             appointment.PaymentId = payment.Id;
+                            appointment.UserId = payment.UserId;
                             _unitOfWork.AppointmentRepository.Update(appointment);
                         }
                     }
@@ -168,6 +175,7 @@ namespace TellMe.Service.Services
                             subscription.IsActive = true;
                             subscription.IsPaid = true;
                             subscription.PaymentId = payment.Id;
+                            subscription.UserId = (Guid)payment.UserId;
                             _unitOfWork.UserSubscriptionRepository.Update(subscription);
                         }
                     }
@@ -194,7 +202,7 @@ namespace TellMe.Service.Services
             var response = new PaymentResponse
             {
                 Id = payment.Id,
-                UserId = payment.UserId,
+                UserId = (Guid)payment.UserId,
                 AppointmentId = payment.AppointmentId,
                 UserSubscriptionId = payment.UserSubscriptionId,
                 Amount = payment.Amount,
@@ -240,6 +248,15 @@ namespace TellMe.Service.Services
                         PackageType = package?.PackageType ?? "Unknown",
                         IsActive = subscription.IsActive
                     };
+                }
+            }
+
+            if (payment.UserId.HasValue)
+            {
+                var user = await _userManager.FindByIdAsync(payment.UserId.Value.ToString());
+                if (user != null)
+                {
+                    response.User = _mapper.Map<ProfileResponse>(user);
                 }
             }
 

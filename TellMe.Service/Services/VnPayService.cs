@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -22,13 +24,17 @@ namespace TellMe.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserSubscriptionService _userSubscriptionService;
         private readonly ITimeHelper _timeHelper;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public VnPayService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserSubscriptionService userSubscriptionService, ITimeHelper timeHelper)
+        public VnPayService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IUnitOfWork unitOfWork, IUserSubscriptionService userSubscriptionService, ITimeHelper timeHelper, IMapper mapper)
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
             _userSubscriptionService = userSubscriptionService;
             _timeHelper = timeHelper;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         public async Task<string> CreatePaymentUrl(CreatePaymentRequest model, HttpContext context)
@@ -101,7 +107,6 @@ namespace TellMe.Service.Services
             return paymentUrl;
         }
 
-
         public async Task<PaymentResponse> PaymentExecute(IQueryCollection collections, string paymentId)
         {
             try
@@ -153,6 +158,7 @@ namespace TellMe.Service.Services
                             appointment.IsPaid = true;
                             appointment.UpdatedAt = _timeHelper.NowVietnam();
                             appointment.PaymentId = payment.Id;
+                            appointment.UserId = payment.UserId;
                             _unitOfWork.AppointmentRepository.Update(appointment);
                         }
                     }
@@ -164,6 +170,7 @@ namespace TellMe.Service.Services
                             subscription.IsActive = true;
                             subscription.IsPaid = true;
                             subscription.PaymentId = payment.Id;
+                            subscription.UserId = (Guid)payment.UserId;
                             _unitOfWork.UserSubscriptionRepository.Update(subscription);
                         }
                     }
@@ -190,7 +197,7 @@ namespace TellMe.Service.Services
             var response = new PaymentResponse
             {
                 Id = payment.Id,
-                UserId = payment.UserId,
+                UserId = (Guid)payment.UserId,
                 AppointmentId = payment.AppointmentId,
                 UserSubscriptionId = payment.UserSubscriptionId,
                 Amount = payment.Amount,
@@ -235,6 +242,15 @@ namespace TellMe.Service.Services
                         PackageType = package?.PackageType ?? "Unknown",
                         IsActive = subscription.IsActive
                     };
+                }
+            }
+
+            if (payment.UserId.HasValue)
+            {
+                var user = await _userManager.FindByIdAsync(payment.UserId.Value.ToString());
+                if (user != null)
+                {
+                    response.User = _mapper.Map<ProfileResponse>(user);
                 }
             }
 
