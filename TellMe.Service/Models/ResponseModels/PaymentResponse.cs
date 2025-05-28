@@ -24,6 +24,8 @@ namespace TellMe.Service.Models.ResponseModels
         public AppointmentBasicInfo? AppointmentInfo { get; set; }
 
         public SubscriptionBasicInfo? SubscriptionInfo { get; set; }
+
+        public ProfileResponse? User { get; set; }
     }
 
     public class AppointmentBasicInfo

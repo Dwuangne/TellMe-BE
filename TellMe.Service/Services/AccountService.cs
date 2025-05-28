@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -227,7 +228,7 @@ namespace TellMe.Service.Services
         {
             try
             {
-                var users = _userManager.Users.ToList();
+                var users = await _userManager.Users.ToListAsync();
                 var profileResponses = new List<ProfileResponse>();
 
                 foreach (var user in users)
@@ -243,7 +244,8 @@ namespace TellMe.Service.Services
                         Address = user.Address,
                         RegistrationDate = user.RegistrationDate,
                         EmailConfirmed = user.EmailConfirmed,
-                        LockoutEnabled = user.LockoutEnabled
+                        LockoutEnabled = user.LockoutEnabled,
+                        roleName = roles.Any() ? string.Join(", ", roles) : null
                     });
                 }
 
@@ -277,7 +279,8 @@ namespace TellMe.Service.Services
                     Address = user.Address,
                     RegistrationDate = user.RegistrationDate,
                     EmailConfirmed = user.EmailConfirmed,
-                    LockoutEnabled = !user.LockoutEnabled
+                    LockoutEnabled = !user.LockoutEnabled,
+                    roleName = roles.Any() ? string.Join(", ", roles) : null
                 };
             }
             catch (NotFoundException ex)
@@ -356,6 +359,8 @@ namespace TellMe.Service.Services
                     throw new BadRequestException(errors);
                 }
 
+                var roles = await _userManager.GetRolesAsync(user);
+
                 // Return updated profile
                 return new ProfileResponse
                 {
@@ -367,7 +372,8 @@ namespace TellMe.Service.Services
                     Address = user.Address,
                     RegistrationDate = user.RegistrationDate,
                     EmailConfirmed = user.EmailConfirmed,
-                    LockoutEnabled = !user.LockoutEnabled
+                    LockoutEnabled = !user.LockoutEnabled,
+                    roleName = roles.Any() ? string.Join(", ", roles) : null
                 };
             }
             catch (NotFoundException ex)

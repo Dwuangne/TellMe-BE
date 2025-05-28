@@ -121,13 +121,12 @@ namespace TellMe.API.Controllers
 
                 if (string.IsNullOrWhiteSpace(txnRef) || !txnRef.Contains('-'))
                 {
-                    //return BadRequest(new ResponseObject
-                    //{
-                    //    Status = HttpStatusCode.BadRequest,
-                    //    Message = "Transaction reference is invalid or missing",
-                    //    Data = null
-                    //});
-                    return Redirect(paymentFailUrl);
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Transaction reference is invalid or missing",
+                        Data = null
+                    });
                 }
 
                 var paymentIdString = txnRef.Split('|')[0];
