@@ -37,10 +37,9 @@ namespace TellMe.Repository.Enities
         public string PaymentMethod { get; set; }
 
         [Required]
-        public PaymentStatus Status { get; set; } 
-
+        public PaymentStatus Status { get; set; }
+        public long? OrderCode { get; set; }        
         public string? TransactionId { get; set; }
-
         public DateTime PaymentDate { get; set; }
 
         public virtual Appointment? Appointment { get; set; }

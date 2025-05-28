@@ -17,13 +17,15 @@ namespace TellMe.API.Controllers
     {
         private readonly IPaymentService _paymentService;
         private readonly IVnPayService _vnPayService;
+        private readonly IPayOsService _payOsService;
         private readonly string paymentSuccessUrl = "http://localhost:5173/payment/success";
         private readonly string paymentFailUrl = "http://localhost:5173/payment/fail";
 
-        public PaymentController(IPaymentService paymentService, IVnPayService vnPayService)
+        public PaymentController(IPaymentService paymentService, IVnPayService vnPayService, IPayOsService payOsService)
         {
             _paymentService = paymentService;
             _vnPayService = vnPayService;
+            _payOsService = payOsService;
         }
 
         [HttpPost]
@@ -176,6 +178,153 @@ namespace TellMe.API.Controllers
             }
         }
 
+        [HttpPost("payos")]
+        [Authorize]
+        //[AllowAnonymous]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreatePaymentUrlPayOs(CreatePaymentRequest model)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Payment request cannot be null",
+                        Data = null
+                    });
+                }
+
+                if (!model.IsValid())
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Invalid payment request. Either AppointmentId or UserSubscriptionId must be provided, but not both.",
+                        Data = null
+                    });
+                }
+
+                var url = await _payOsService.CreatePaymentUrl(model, HttpContext);
+
+                if (string.IsNullOrEmpty(url))
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Failed to create payment URL",
+                        Data = null
+                    });
+                }
+
+                return Ok(new ResponseObject
+                {
+                    Status = HttpStatusCode.OK,
+                    Message = "Successfully created PayOS payment URL",
+                    Data = url
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseObject
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ResponseObject
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseObject
+                {
+                    Status = HttpStatusCode.InternalServerError,
+                    Message = "An unexpected error occurred while processing your payment request",
+                    Data = null
+                });
+            }
+        }
+
+        [HttpGet("return_url")]
+        //[AllowAnonymous]
+        [ProducesResponseType(typeof(ResponseObject), 200)]
+        [ProducesResponseType(typeof(ResponseObject), 401)]
+        [ProducesResponseType(typeof(ResponseObject), 404)]
+        public async Task<IActionResult> PayOsReturnUrl()
+        {
+            try
+            {
+
+                var response = await _payOsService.PaymentExecute(Request.Query);
+
+                if (response == null)
+                {
+                    return BadRequest(new ResponseObject
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Invalid payment response",
+                        Data = null
+                    });
+                }
+
+                if (response.Status == PaymentStatus.Success)
+                {
+                    // return Ok(new ResponseObject
+                    // {
+                    //     Status = HttpStatusCode.OK,
+                    //     Message = "Payment processed successfully",
+                    //     Data = response
+                    // });
+                    return Redirect(paymentSuccessUrl);
+                }
+                else
+                {
+                    // 402 Payment Required for failed payment
+                    // return StatusCode((int)HttpStatusCode.PaymentRequired, new ResponseObject
+                    // {
+                    //     Status = HttpStatusCode.PaymentRequired,
+                    //     Message = "Payment failed",
+                    //     Data = response
+                    // });
+                    return Redirect(paymentFailUrl);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseObject
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+        }
+
+        [HttpGet("cancel_url")]
+        //[AllowAnonymous]
+        [ProducesResponseType(typeof(ResponseObject), 200)]
+        public IActionResult PayOsCancelUrl([FromQuery] string paymentId)
+        {
+            // return Ok(new ResponseObject
+            // {
+            //     Status = HttpStatusCode.OK,
+            //     Message = "Payment was cancelled by user.",
+            //     Data = null
+            // });
+            return Redirect(paymentFailUrl);
+        }
 
         /// <summary>
         /// Get payment by ID

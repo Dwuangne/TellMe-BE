@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TellMe.Repository.DBContexts;
 
@@ -11,9 +12,11 @@ using TellMe.Repository.DBContexts;
 namespace TellMe.Repository.Migrations.TellMeDB
 {
     [DbContext(typeof(TellMeDBContext))]
-    partial class TellMeDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250528074656_UpdatePayment")]
+    partial class UpdatePayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
