@@ -63,5 +63,13 @@
         {
             public const string AppointmentEndpoint = ApiEndPoint + "/appointments";
         }
+        public static class CheckOut
+        {
+            public const string CheckOutEndpoint = ApiEndPoint + "/check-out";
+            public const string CreateCheckOut = "/create";
+            public const string ReturnCheckOut = "/return_url";
+            public const string CancelCheckOut = "/cancel_url";
+        }
+
     }
 }
