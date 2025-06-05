@@ -24,6 +24,11 @@ namespace TellMe.Service.Mapping
             CreateMap<SubscriptionPackage, UpdatePackageRequest>().ReverseMap();
             CreateMap<Appointment, CreateAppointmentRequest>().ReverseMap();
             CreateMap<Appointment, UpdateAppointmentRequest>().ReverseMap();
+            
+            // Chat mapping
+            CreateMap<ConversationRequest, Conversation>().ReverseMap();
+            CreateMap<MessageRequest, Message>().ReverseMap();
+            CreateMap<ParticipantRequest, Participant>().ReverseMap();
 
             CreateMap<AnswerOption, AnswerOptionResponse>().ReverseMap();
             CreateMap<PsychologicalTest, PsychologicalTestResponse>().ReverseMap();
@@ -45,6 +50,11 @@ namespace TellMe.Service.Mapping
             CreateMap<UserSubscription, UserSubscriptionResponse>().ReverseMap();
             CreateMap<Appointment, AppointmentResponse>().ReverseMap();
             CreateMap<ApplicationUser, ProfileResponse>().ReverseMap();
+            
+            // Chat response mapping
+            CreateMap<Conversation, ConversationResponse>().ReverseMap();
+            CreateMap<Message, MessageResponse>().ReverseMap();
+            CreateMap<Participant, ParticipantResponse>().ReverseMap();
 
         }
     }

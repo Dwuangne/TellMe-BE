@@ -25,6 +25,10 @@ namespace TellMe.Repository.DBContexts
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
         public DbSet<SubscriptionPackage> SubscriptionPackages { get; set; }
 
+        public DbSet<Conversation> Conversation { get; set; }
+        public DbSet<Message> Message { get; set; }
+        public DbSet<Participant> Participant { get; set; }
+
         public TellMeDBContext()
         {
         }

@@ -71,5 +71,15 @@
             public const string CancelCheckOut = "/cancel_url";
         }
 
+        public static class Conversation
+        {
+            public const string ConversationEndpoint = ApiEndPoint + "/conversations";
+        }
+
+        public static class Message
+        {
+            public const string MessageEndpoint = ApiEndPoint + "/messages";
+        }
+
     }
 }

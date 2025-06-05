@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using TellMe.API.Constants;
 using TellMe.API.Extensions;
+using TellMe.API.Hubs;
 using TellMe.Repository.DBContexts;
 using TellMe.Repository.Enities;
 using TellMe.Repository.Infrastructures;
@@ -109,6 +110,7 @@ app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 
 app.MapGet("/", () => "Welcome to Tell Me Application API!");
 

@@ -68,15 +68,43 @@ namespace TellMe.API.Extensions
                     ValidAudience = configuration["JwtAuth:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtAuth:Key"]))
                 };
+
+                // Cấu hình cho SignalR
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // Lấy token từ query string cho SignalR
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
-            // Cấu hình CORS
+            // Cấu hình CORS cho SignalR
             services.AddCors(cors => cors.AddPolicy(
                 name: CorsConstant.PolicyName,
                 policy =>
                 {
-                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                    policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials(); // Quan trọng cho SignalR
                 }));
+
+            // Cấu hình SignalR
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true; // Chỉ bật trong development
+                options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+            });
 
             // Dependency Injection
             services.AddHttpContextAccessor();
@@ -96,6 +124,11 @@ namespace TellMe.API.Extensions
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IPayOsService, PayOsService>();
             services.AddScoped<IVnPayService, VnPayService>();
+            
+            // Chat Services
+            services.AddScoped<IConversationService, ConversationService>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IParticipantService, ParticipantService>();
 
             services.AddSingleton<IEmailRepository, EmailRepository>();
             services.AddSingleton<IAccountTokenRedisRepository, AccountTokenRedisRepository>();

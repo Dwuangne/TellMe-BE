@@ -25,6 +25,9 @@ namespace TellMe.Repository.Infrastructures
         IGenericRepository<Payment> PaymentRepository { get; }
         IGenericRepository<UserSubscription> UserSubscriptionRepository { get; }
         IGenericRepository<SubscriptionPackage> SubscriptionPackageRepository { get; }
+        IGenericRepository<Conversation> ConversationRepository { get; }
+        IGenericRepository<Message> MessageRepository { get; }
+        IGenericRepository<Participant> ParticipantRepository { get; }
 
         void Commit();
         Task CommitAsync();
