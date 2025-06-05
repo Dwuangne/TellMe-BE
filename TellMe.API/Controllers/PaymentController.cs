@@ -314,7 +314,7 @@ namespace TellMe.API.Controllers
         [HttpGet("cancel_url")]
         //[AllowAnonymous]
         [ProducesResponseType(typeof(ResponseObject), 200)]
-        public IActionResult PayOsCancelUrl([FromQuery] string paymentId)
+        public IActionResult PayOsCancelUrl()
         {
             // return Ok(new ResponseObject
             // {

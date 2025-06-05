@@ -28,7 +28,9 @@ namespace TellMe.Repository.Infrastructures
         private IGenericRepository<Payment> _paymentRepository;
         private IGenericRepository<UserSubscription> _userSubscriptionRepository;
         private IGenericRepository<SubscriptionPackage> _subscriptionPackageRepository;
-
+        private IGenericRepository<Conversation> _conversationRepository;
+        private IGenericRepository<Message> _messageRepository;
+        private IGenericRepository<Participant> _participantRepository;
         public UnitOfWork(TellMeDBContext dbContext, TellMeAuthDBContext dbAuthContext) 
         {
             _dbContext = dbContext;
@@ -75,6 +77,15 @@ namespace TellMe.Repository.Infrastructures
 
         public IGenericRepository<SubscriptionPackage> SubscriptionPackageRepository => 
             _subscriptionPackageRepository ??= new GenericRepository<SubscriptionPackage>(_dbContext);
+
+        public IGenericRepository<Conversation> ConversationRepository =>
+            _conversationRepository ??= new GenericRepository<Conversation>(_dbContext);
+
+        public IGenericRepository<Message> MessageRepository =>
+            _messageRepository ??= new GenericRepository<Message>(_dbContext);
+
+        public IGenericRepository<Participant> ParticipantRepository =>
+            _participantRepository ??= new GenericRepository<Participant>(_dbContext);
 
         public void Commit()
         {
