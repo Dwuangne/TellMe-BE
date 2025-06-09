@@ -34,7 +34,7 @@ namespace TellMe.Service.Services
 
             var result = await _unitOfWork.MessageRepository.GetAsync(
                 filter: m => m.ConversationId == conversationId,
-                orderBy: m => m.OrderBy(x => x.SendAt), // Order by time sent
+                orderBy: m => m.OrderByDescending(x => x.SendAt), // Order by time sent
                 pageIndex: pageIndex,
                 pageSize: pageSize
             );

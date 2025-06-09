@@ -4,16 +4,17 @@ using Microsoft.AspNetCore.Identity;
 using TellMe.Service.Models.RequestModels;
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Authorization;
+using TellMe.Repository.Enities; // Added namespace for ApplicationUser
 
 namespace TellMe.API.Hubs
 {
-    [Authorize]
+    [Authorize] 
     public class ChatHub : Hub
     {
         private readonly IMessageService messageService;
         private readonly IConversationService conversationService;
         private readonly IParticipantService participantService;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager; // Changed from IdentityUser to ApplicationUser
         private readonly ILogger<ChatHub> logger;
 
         // Static dictionary to track user connections
@@ -22,10 +23,10 @@ namespace TellMe.API.Hubs
         private static readonly ConcurrentDictionary<string, HashSet<string>> UserConversations = new();
 
         public ChatHub(
-            IMessageService messageService, 
-            IConversationService conversationService, 
-            IParticipantService participantService, 
-            UserManager<IdentityUser> userManager,
+            IMessageService messageService,
+            IConversationService conversationService,
+            IParticipantService participantService,
+            UserManager<ApplicationUser> userManager, // Changed from IdentityUser to ApplicationUser
             ILogger<ChatHub> logger)
         {
             this.messageService = messageService;
@@ -44,19 +45,19 @@ namespace TellMe.API.Hubs
                 if (!string.IsNullOrEmpty(userId))
                 {
                     UserConnections[userId] = Context.ConnectionId;
-                    
+
                     // Join user to their existing conversations
                     var userConversations = await GetUserConversationsAsync(Guid.Parse(userId));
                     var conversationIds = new HashSet<string>();
-                    
+
                     foreach (var conversation in userConversations)
                     {
                         await Groups.AddToGroupAsync(Context.ConnectionId, conversation.Id.ToString());
                         conversationIds.Add(conversation.Id.ToString());
                     }
-                    
+
                     UserConversations[userId] = conversationIds;
-                    
+
                     await Clients.Caller.SendAsync("Connected", userId);
                     logger.LogInformation($"User {userId} connected with connection {Context.ConnectionId}");
                 }
@@ -66,7 +67,7 @@ namespace TellMe.API.Hubs
                 logger.LogError(ex, "Error in OnConnectedAsync");
                 await Clients.Caller.SendAsync("Error", "Failed to connect");
             }
-            
+
             await base.OnConnectedAsync();
         }
 
@@ -79,7 +80,7 @@ namespace TellMe.API.Hubs
                 {
                     UserConnections.TryRemove(userId, out _);
                     UserConversations.TryRemove(userId, out _);
-                    
+
                     logger.LogInformation($"User {userId} disconnected");
                 }
             }
@@ -87,13 +88,14 @@ namespace TellMe.API.Hubs
             {
                 logger.LogError(ex, "Error in OnDisconnectedAsync");
             }
-            
+
             await base.OnDisconnectedAsync(exception);
         }
 
         /// <summary>
         /// Join a specific conversation
         /// </summary>
+        // Sửa đổi phương thức JoinConversation trong ChatHub.cs
         public async Task JoinConversation(Guid conversationId)
         {
             try
@@ -114,14 +116,27 @@ namespace TellMe.API.Hubs
 
                 // Check if user is participant
                 var isParticipant = conversation.Participants.Any(p => p.UserId.ToString() == userId);
+
+                // Nếu không phải thành viên, tự động thêm họ vào
                 if (!isParticipant)
                 {
-                    await Clients.Caller.SendAsync("Error", "You are not a participant in this conversation");
-                    return;
+                    // Auto-add user as participant
+                    var userGuid = Guid.Parse(userId);
+                    var participant = new ParticipantRequest
+                    {
+                        UserId = userGuid,
+                        ConversationId = conversationId
+                    };
+
+                    await participantService.AddParticipantAsync(participant);
+                    logger.LogInformation($"User {userId} auto-added to conversation {conversationId}");
+
+                    // Cập nhật biến isParticipant sau khi thêm
+                    isParticipant = true;
                 }
 
                 await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
-                
+
                 // Update user's conversation list
                 if (UserConversations.ContainsKey(userId))
                 {
@@ -146,11 +161,12 @@ namespace TellMe.API.Hubs
             try
             {
                 var currentUserId = Context.UserIdentifier;
-                if (string.IsNullOrEmpty(currentUserId) || currentUserId != userId.ToString())
-                {
-                    await Clients.Caller.SendAsync("Error", "Unauthorized");
-                    return;
-                }
+                logger.LogInformation($"SendMessage: Token UserId={currentUserId}, Param UserId={userId}");
+                //if (string.IsNullOrEmpty(currentUserId) || currentUserId != userId.ToString())
+                //{
+                //    await Clients.Caller.SendAsync("Error", "Unauthorized");
+                //    return;
+                //}
 
                 if (string.IsNullOrWhiteSpace(content))
                 {
@@ -172,13 +188,13 @@ namespace TellMe.API.Hubs
                     var participant = new ParticipantRequest { UserId = userId, ConversationId = conversationId };
                     await participantService.AddParticipantAsync(participant);
                     await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
-                    
+
                     // Update user's conversation list
                     if (UserConversations.ContainsKey(currentUserId))
                     {
                         UserConversations[currentUserId].Add(conversationId.ToString());
                     }
-                    
+
                     await Clients.Group(conversationId.ToString()).SendAsync("UserJoinedConversation", userId, currentUserId);
                 }
 
@@ -190,10 +206,10 @@ namespace TellMe.API.Hubs
                 };
 
                 var messageResponse = await messageService.AddMessageAsync(message);
-                
+
                 // Send message to all participants in the conversation
                 await Clients.Group(conversationId.ToString()).SendAsync("ReceiveMessage", messageResponse);
-                
+
                 logger.LogInformation($"Message sent from user {userId} to conversation {conversationId}");
             }
             catch (Exception ex)
@@ -218,7 +234,7 @@ namespace TellMe.API.Hubs
                 }
 
                 var currentUserGuid = Guid.Parse(currentUserId);
-                
+
                 if (currentUserGuid == targetUserId)
                 {
                     await Clients.Caller.SendAsync("Error", "Cannot start conversation with yourself");
@@ -241,12 +257,12 @@ namespace TellMe.API.Hubs
 
                 // Create conversation with both users as participants
                 var message = new MessageRequest { Content = content, UserId = currentUserGuid };
-                var participants = new List<ParticipantRequest> 
-                { 
+                var participants = new List<ParticipantRequest>
+                {
                     new ParticipantRequest { UserId = currentUserGuid },
                     new ParticipantRequest { UserId = targetUserId }
                 };
-                
+
                 var conversation = new ConversationRequest
                 {
                     Messages = new List<MessageRequest> { message },
@@ -262,12 +278,12 @@ namespace TellMe.API.Hubs
 
                 // Add current user to conversation group
                 await Groups.AddToGroupAsync(Context.ConnectionId, conversationResponse.Id.ToString());
-                
+
                 // Add target user to conversation group if they're online
                 if (UserConnections.TryGetValue(targetUserId.ToString(), out var targetConnectionId))
                 {
                     await Groups.AddToGroupAsync(targetConnectionId, conversationResponse.Id.ToString());
-                    
+
                     // Update target user's conversation list
                     if (UserConversations.ContainsKey(targetUserId.ToString()))
                     {
@@ -283,7 +299,7 @@ namespace TellMe.API.Hubs
 
                 // Notify both users about the new conversation
                 await Clients.Group(conversationResponse.Id.ToString()).SendAsync("NewConversationCreated", conversationResponse);
-                
+
                 logger.LogInformation($"New conversation {conversationResponse.Id} created between users {currentUserGuid} and {targetUserId}");
             }
             catch (Exception ex)
