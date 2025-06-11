@@ -22,6 +22,7 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    OrderCode = table.Column<long>(type: "bigint", nullable: true),
                     TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)

@@ -12,7 +12,7 @@ using TellMe.Repository.DBContexts;
 namespace TellMe.Repository.Migrations.TellMeDB
 {
     [DbContext(typeof(TellMeDBContext))]
-    [Migration("20250520154507_InitialCreate")]
+    [Migration("20250604090243_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -131,6 +131,9 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<long?>("OrderCode")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
@@ -145,7 +148,8 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Property<string>("TransactionId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UserSubscriptionId")
