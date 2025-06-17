@@ -1,5 +1,4 @@
-
-﻿//=============TELLME==============
+//=============TELLME==============
 
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -92,6 +91,25 @@ builder.Services.AddControllers()
     });
 
 var app = builder.Build();
+
+// Auto apply migrations for both DbContexts
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var authDbContext = services.GetRequiredService<TellMe.Repository.DBContexts.TellMeAuthDBContext>();
+        authDbContext.Database.Migrate();
+        var mainDbContext = services.GetRequiredService<TellMe.Repository.DBContexts.TellMeDBContext>();
+        mainDbContext.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+        throw;
+    }
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
