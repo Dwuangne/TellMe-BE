@@ -92,7 +92,11 @@ namespace TellMe.API.Extensions
                 name: CorsConstant.PolicyName,
                 policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+                    policy.WithOrigins(
+                        "http://localhost:3000",
+                        "https://localhost:3000",
+                        "https://fe.tellme.io.vn"
+                    )
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials(); // Quan trọng cho SignalR
