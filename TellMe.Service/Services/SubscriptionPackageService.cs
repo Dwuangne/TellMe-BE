@@ -71,6 +71,7 @@ namespace TellMe.Service.Services
         {
             var packages = await _unitOfWork.SubscriptionPackageRepository.GetAsync(
                 filter: p => includeInactive || p.IsActive,
+                includeProperties: "Promotion",
                 orderBy: q => q.OrderBy(p => p.Duration)
             );
 
@@ -81,6 +82,7 @@ namespace TellMe.Service.Services
         {
             var packages = await _unitOfWork.SubscriptionPackageRepository.GetAsync(
                 filter: includeInactive ? null : p => p.IsActive,
+                includeProperties: "Promotion",
                 orderBy: q => q.OrderBy(p => p.Duration)
             );
 
@@ -89,11 +91,15 @@ namespace TellMe.Service.Services
 
         public async Task<SubscriptionPackageResponse?> GetPackageByIdAsync(int id)
         {
-            var package = await _unitOfWork.SubscriptionPackageRepository.GetByIdAsync(id);
-            if (package == null)
-                return null;
+            var package = await _unitOfWork.SubscriptionPackageRepository
+        .GetAsync(
+            filter: p => p.Id == id,
+            includeProperties: "Promotion"
+        );
+            //if (package == null)
+            //    return null;
 
-            return _mapper.Map<SubscriptionPackageResponse>(package);
+            return _mapper.Map<SubscriptionPackageResponse>(package.Items.FirstOrDefault());
         }
 
         public async Task<bool> RestorePackageAsync(int id)

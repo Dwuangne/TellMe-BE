@@ -29,6 +29,9 @@ namespace TellMe.Repository.DBContexts
         public DbSet<Message> Message { get; set; }
         public DbSet<Participant> Participant { get; set; }
 
+        public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<UserPromotion> UserPromotions { get; set; }
+
         public TellMeDBContext()
         {
         }

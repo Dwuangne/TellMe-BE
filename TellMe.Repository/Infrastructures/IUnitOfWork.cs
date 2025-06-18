@@ -28,6 +28,8 @@ namespace TellMe.Repository.Infrastructures
         IGenericRepository<Conversation> ConversationRepository { get; }
         IGenericRepository<Message> MessageRepository { get; }
         IGenericRepository<Participant> ParticipantRepository { get; }
+        IGenericRepository<Promotion> PromotionRepository { get; }
+        IGenericRepository<UserPromotion> UserPromotionRepository { get; }
 
         void Commit();
         Task CommitAsync();

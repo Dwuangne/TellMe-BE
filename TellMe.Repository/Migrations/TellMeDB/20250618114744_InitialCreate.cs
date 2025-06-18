@@ -12,23 +12,34 @@ namespace TellMe.Repository.Migrations.TellMeDB
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Payments",
+                name: "Conversation",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AppointmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UserSubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Conversation", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Promotions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DiscountPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.PrimaryKey("PK_Promotions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,6 +101,47 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 });
 
             migrationBuilder.CreateTable(
+                name: "Message",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SendAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConversationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Message_Conversation_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "Conversation",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Participant",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JoinedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConversationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Participant", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Participant_Conversation_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "Conversation",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SubscriptionPackages",
                 columns: table => new
                 {
@@ -102,6 +154,8 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     Features = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PackageType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
+                    PromotionId = table.Column<int>(type: "int", nullable: false),
+                    PromotionCount = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
@@ -109,36 +163,33 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubscriptionPackages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionPackages_Promotions_PromotionId",
+                        column: x => x.PromotionId,
+                        principalTable: "Promotions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Appointments",
+                name: "UserPromotions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ExpertId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AppointmentDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DurationMinutes = table.Column<int>(type: "int", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MeetingURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Fee = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    PaymentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PromotionId = table.Column<int>(type: "int", nullable: true),
+                    PromotionCount = table.Column<int>(type: "int", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Appointments", x => x.Id);
+                    table.PrimaryKey("PK_UserPromotions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appointments_Payments_PaymentId",
-                        column: x => x.PaymentId,
-                        principalTable: "Payments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_UserPromotions_Promotions_PromotionId",
+                        column: x => x.PromotionId,
+                        principalTable: "Promotions",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -276,6 +327,89 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 });
 
             migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppointmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserSubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SubscriptionPackageId = table.Column<int>(type: "int", nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    OrderCode = table.Column<long>(type: "bigint", nullable: true),
+                    TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PromotionId = table.Column<int>(type: "int", nullable: true),
+                    PromotionCount = table.Column<int>(type: "int", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payments_SubscriptionPackages_SubscriptionPackageId",
+                        column: x => x.SubscriptionPackageId,
+                        principalTable: "SubscriptionPackages",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AnswerOptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Score = table.Column<int>(type: "int", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    QuestionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnswerOptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AnswerOptions_Questions_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "Questions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Appointments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ExpertId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppointmentDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DurationMinutes = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MeetingURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fee = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    PaymentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Appointments_Payments_PaymentId",
+                        column: x => x.PaymentId,
+                        principalTable: "Payments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserSubscriptions",
                 columns: table => new
                 {
@@ -301,30 +435,6 @@ namespace TellMe.Repository.Migrations.TellMeDB
                         name: "FK_UserSubscriptions_SubscriptionPackages_PackageId",
                         column: x => x.PackageId,
                         principalTable: "SubscriptionPackages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AnswerOptions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Score = table.Column<int>(type: "int", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    QuestionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AnswerOptions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AnswerOptions_Questions_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "Questions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -374,6 +484,21 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 filter: "[PaymentId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Message_ConversationId",
+                table: "Message",
+                column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Participant_ConversationId",
+                table: "Participant",
+                column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_SubscriptionPackageId",
+                table: "Payments",
+                column: "SubscriptionPackageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PsychologistEducations_PsychologistId",
                 table: "PsychologistEducations",
                 column: "PsychologistId");
@@ -394,6 +519,11 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 column: "TestId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionPackages_PromotionId",
+                table: "SubscriptionPackages",
+                column: "PromotionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserAnswers_AnswerOptionId",
                 table: "UserAnswers",
                 column: "AnswerOptionId");
@@ -407,6 +537,11 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 name: "IX_UserAnswers_UserTestId",
                 table: "UserAnswers",
                 column: "UserTestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPromotions_PromotionId",
+                table: "UserPromotions",
+                column: "PromotionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSubscriptions_PackageId",
@@ -438,6 +573,12 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 name: "Appointments");
 
             migrationBuilder.DropTable(
+                name: "Message");
+
+            migrationBuilder.DropTable(
+                name: "Participant");
+
+            migrationBuilder.DropTable(
                 name: "PsychologistEducations");
 
             migrationBuilder.DropTable(
@@ -453,7 +594,13 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 name: "UserAnswers");
 
             migrationBuilder.DropTable(
+                name: "UserPromotions");
+
+            migrationBuilder.DropTable(
                 name: "UserSubscriptions");
+
+            migrationBuilder.DropTable(
+                name: "Conversation");
 
             migrationBuilder.DropTable(
                 name: "AnswerOptions");
@@ -465,16 +612,19 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 name: "Payments");
 
             migrationBuilder.DropTable(
-                name: "SubscriptionPackages");
-
-            migrationBuilder.DropTable(
                 name: "Questions");
 
             migrationBuilder.DropTable(
                 name: "Psychologists");
 
             migrationBuilder.DropTable(
+                name: "SubscriptionPackages");
+
+            migrationBuilder.DropTable(
                 name: "PsychologicalTests");
+
+            migrationBuilder.DropTable(
+                name: "Promotions");
         }
     }
 }
