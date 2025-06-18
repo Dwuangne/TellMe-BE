@@ -204,7 +204,16 @@ namespace TellMe.Repository.Migrations.TellMeDB
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("PromotionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PromotionId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubscriptionPackageId")
                         .HasColumnType("int");
 
                     b.Property<string>("TransactionId")
@@ -219,7 +228,42 @@ namespace TellMe.Repository.Migrations.TellMeDB
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SubscriptionPackageId");
+
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.Promotion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DiscountPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Promotions");
                 });
 
             modelBuilder.Entity("TellMe.Repository.Enities.PsychologicalTest", b =>
@@ -568,7 +612,15 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
+                    b.Property<int>("PromotionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PromotionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PromotionId");
 
                     b.ToTable("SubscriptionPackages");
                 });
@@ -600,6 +652,33 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.HasIndex("UserTestId");
 
                     b.ToTable("UserAnswers");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.UserPromotion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("PromotionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PromotionId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PromotionId");
+
+                    b.ToTable("UserPromotions");
                 });
 
             modelBuilder.Entity("TellMe.Repository.Enities.UserSubscription", b =>
@@ -717,6 +796,15 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Navigation("Conversation");
                 });
 
+            modelBuilder.Entity("TellMe.Repository.Enities.Payment", b =>
+                {
+                    b.HasOne("TellMe.Repository.Enities.SubscriptionPackage", "SubscriptionPackage")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionPackageId");
+
+                    b.Navigation("SubscriptionPackage");
+                });
+
             modelBuilder.Entity("TellMe.Repository.Enities.PsychologistEducation", b =>
                 {
                     b.HasOne("TellMe.Repository.Enities.Psychologist", "Psychologist")
@@ -761,6 +849,17 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Navigation("Test");
                 });
 
+            modelBuilder.Entity("TellMe.Repository.Enities.SubscriptionPackage", b =>
+                {
+                    b.HasOne("TellMe.Repository.Enities.Promotion", "Promotion")
+                        .WithMany()
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Promotion");
+                });
+
             modelBuilder.Entity("TellMe.Repository.Enities.UserAnswer", b =>
                 {
                     b.HasOne("TellMe.Repository.Enities.AnswerOption", "AnswerOption")
@@ -785,6 +884,15 @@ namespace TellMe.Repository.Migrations.TellMeDB
                     b.Navigation("Question");
 
                     b.Navigation("UserTest");
+                });
+
+            modelBuilder.Entity("TellMe.Repository.Enities.UserPromotion", b =>
+                {
+                    b.HasOne("TellMe.Repository.Enities.Promotion", "Promotion")
+                        .WithMany()
+                        .HasForeignKey("PromotionId");
+
+                    b.Navigation("Promotion");
                 });
 
             modelBuilder.Entity("TellMe.Repository.Enities.UserSubscription", b =>

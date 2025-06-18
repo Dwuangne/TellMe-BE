@@ -40,6 +40,8 @@ namespace TellMe.Repository.Enities
         public string PackageType { get; set; } = string.Empty;
 
         public int Price { get; set; }
+        public int PromotionId { get; set; } = 0;
+        public int PromotionCount { get; set; } = 0;
 
         public DateTime CreatedDate { get; set; }
 
@@ -47,5 +49,6 @@ namespace TellMe.Repository.Enities
 
         public bool IsActive { get; set; } = true;
 
+        public virtual Promotion? Promotion { get; set; }
     }
 }

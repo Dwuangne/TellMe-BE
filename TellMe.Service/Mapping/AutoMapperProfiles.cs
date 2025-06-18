@@ -24,7 +24,9 @@ namespace TellMe.Service.Mapping
             CreateMap<SubscriptionPackage, UpdatePackageRequest>().ReverseMap();
             CreateMap<Appointment, CreateAppointmentRequest>().ReverseMap();
             CreateMap<Appointment, UpdateAppointmentRequest>().ReverseMap();
-            
+            CreateMap<Promotion, PromotionRequest>().ReverseMap();
+            CreateMap<UserPromotion, UserPromotionRequest>().ReverseMap();
+
             // Chat mapping
             CreateMap<ConversationRequest, Conversation>().ReverseMap();
             CreateMap<MessageRequest, Message>().ReverseMap();

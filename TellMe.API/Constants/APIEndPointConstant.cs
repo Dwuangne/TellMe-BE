@@ -81,5 +81,15 @@
             public const string MessageEndpoint = ApiEndPoint + "/messages";
         }
 
+        public static class Promotion
+        {
+            public const string PromotionEndpoint = ApiEndPoint + "/promotions";
+        }
+
+        public static class UserPromotion
+        {
+            public const string UserPromotionEndpoint = ApiEndPoint + "/user-promotions";
+        }
+
     }
 }

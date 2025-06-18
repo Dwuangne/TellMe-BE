@@ -124,7 +124,9 @@ namespace TellMe.API.Extensions
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IPayOsService, PayOsService>();
             services.AddScoped<IVnPayService, VnPayService>();
-            
+            services.AddScoped<IPromotionService, PromotionService>();
+            services.AddScoped<IUserPromotionService, UserPromotionService>();
+
             // Chat Services
             services.AddScoped<IConversationService, ConversationService>();
             services.AddScoped<IMessageService, MessageService>();

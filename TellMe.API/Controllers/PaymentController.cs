@@ -130,8 +130,10 @@ namespace TellMe.API.Controllers
                 }
 
                 var paymentIdString = txnRef.Split('|')[0];
+                var promotionId = txnRef.Split('|')[1];
+                var promotionCount = txnRef.Split('|')[2];
 
-                var response = await _vnPayService.PaymentExecute(Request.Query, paymentIdString);
+                var response = await _vnPayService.PaymentExecute(Request.Query, paymentIdString, promotionId, promotionCount);
 
                 if (response == null)
                 {

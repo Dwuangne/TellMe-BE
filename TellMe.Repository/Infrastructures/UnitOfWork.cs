@@ -31,6 +31,9 @@ namespace TellMe.Repository.Infrastructures
         private IGenericRepository<Conversation> _conversationRepository;
         private IGenericRepository<Message> _messageRepository;
         private IGenericRepository<Participant> _participantRepository;
+        private IGenericRepository<Promotion> _promotionRepository;
+        private IGenericRepository<UserPromotion> _userPromotionRepository;
+
         public UnitOfWork(TellMeDBContext dbContext, TellMeAuthDBContext dbAuthContext) 
         {
             _dbContext = dbContext;
@@ -86,6 +89,12 @@ namespace TellMe.Repository.Infrastructures
 
         public IGenericRepository<Participant> ParticipantRepository =>
             _participantRepository ??= new GenericRepository<Participant>(_dbContext);
+
+        public IGenericRepository<Promotion> PromotionRepository => 
+            _promotionRepository ??= new GenericRepository<Promotion>(_dbContext);
+
+        public IGenericRepository<UserPromotion> UserPromotionRepository =>
+            _userPromotionRepository ??= new GenericRepository<UserPromotion>(_dbContext);
 
         public void Commit()
         {

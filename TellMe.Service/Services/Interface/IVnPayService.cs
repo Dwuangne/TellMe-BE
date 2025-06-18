@@ -12,7 +12,7 @@ namespace TellMe.Service.Services.Interface
     public interface IVnPayService
     {
         Task<string> CreatePaymentUrl(CreatePaymentRequest model, HttpContext context);
-        Task<PaymentResponse> PaymentExecute(IQueryCollection collections, string paymentId);
+        Task<PaymentResponse> PaymentExecute(IQueryCollection collections, string paymentId, string promotionId, string promotionCount);
 
     }
 }

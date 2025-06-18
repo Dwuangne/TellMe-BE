@@ -26,6 +26,8 @@ namespace TellMe.Service.Models.RequestModels
         public string? Features { get; set; }
 
         public int Price { get; set; }
+        public int PromotionId { get; set; } = 0;
+        public int PromotionCount { get; set; } = 0;
 
         [Required]
         public string PackageType { get; set; } = string.Empty;

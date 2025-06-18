@@ -14,6 +14,7 @@ namespace TellMe.Service.Models.RequestModels
         public Guid? AppointmentId { get; set; }
 
         public Guid? UserSubscriptionId { get; set; }
+        public int? SubscriptionPackageId { get; set; }
 
         [Required(ErrorMessage = "Amount is required")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
@@ -24,6 +25,9 @@ namespace TellMe.Service.Models.RequestModels
         public string PaymentMethod { get; set; } = string.Empty;
 
         public Guid? PaymentId { get; set; }
+        public int PromotionId { get; set; }
+
+        public int PromotionCount { get; set; }
 
         // Validate that either AppointmentId or SubscriptionId is provided, but not both
         public bool IsValid()

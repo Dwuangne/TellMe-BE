@@ -54,6 +54,7 @@ namespace TellMe.Service.Services
                         Amount = model.Amount,
                         AppointmentId = model.AppointmentId.HasValue ? model.AppointmentId : null,
                         UserSubscriptionId = model.UserSubscriptionId.HasValue ? model.UserSubscriptionId : null,
+                        SubscriptionPackageId = model.SubscriptionPackageId.HasValue ? model.SubscriptionPackageId : null,
                         PaymentMethod = model.PaymentMethod,
                         Status = Repository.Enums.PaymentStatus.Pending,
                         PaymentDate = _timeHelper.NowVietnam()
@@ -99,7 +100,7 @@ namespace TellMe.Service.Services
             pay.AddRequestData("vnp_OrderInfo", $"{model.UserId} {model.Amount}");
             pay.AddRequestData("vnp_OrderType", model.PaymentMethod);
             pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-            pay.AddRequestData("vnp_TxnRef", $"{paymentId}|{tick}");
+            pay.AddRequestData("vnp_TxnRef", $"{paymentId}|{model.PromotionId}|{model.PromotionCount}|{tick}");
 
             var paymentUrl =
                 pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"], _configuration["Vnpay:HashSecret"]);
@@ -107,7 +108,7 @@ namespace TellMe.Service.Services
             return paymentUrl;
         }
 
-        public async Task<PaymentResponse> PaymentExecute(IQueryCollection collections, string paymentId)
+        public async Task<PaymentResponse> PaymentExecute(IQueryCollection collections, string paymentId, string promotionId, string promotionCount)
         {
             try
             {
@@ -130,6 +131,7 @@ namespace TellMe.Service.Services
                     throw new Exception("Invalid paymentId format");
                 }
 
+
                 var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(paymentGuid);
                 if (payment == null)
                 {
@@ -151,6 +153,28 @@ namespace TellMe.Service.Services
 
                     if (payment.AppointmentId.HasValue)
                     {
+                        // Process promotion if provided
+                        if (!string.IsNullOrEmpty(promotionId) && int.TryParse(promotionId, out int promoId) && promoId > 0)
+                        {
+                            // Get promotion from repository
+                            var promotion = await _unitOfWork.PromotionRepository.GetByIdAsync(promoId);
+                            if (promotion != null && payment.UserId.HasValue)
+                            {
+                                // Find user promotion
+                                var userPromotions = await _unitOfWork.UserPromotionRepository.GetAllAsync();
+                                var userPromotion = userPromotions.FirstOrDefault(up =>
+                                    up.UserId.Equals(payment.UserId.Value) &&
+                                    up.PromotionId == promoId);
+
+                                if (userPromotion != null && userPromotion.PromotionCount > 0)
+                                {
+                                    // Reduce promotion count by 1
+                                    userPromotion.PromotionCount -= 1;
+                                    _unitOfWork.UserPromotionRepository.Update(userPromotion);
+                                }
+                            }
+                        }
+
                         var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(payment.AppointmentId.Value);
                         if (appointment != null && appointment.Status == AppointmentStatus.Pending)
                         {
@@ -162,17 +186,38 @@ namespace TellMe.Service.Services
                             _unitOfWork.AppointmentRepository.Update(appointment);
                         }
                     }
-                    else if (payment.UserSubscriptionId.HasValue)
+                    else if (payment.SubscriptionPackageId.HasValue)
                     {
-                        var subscription = await _unitOfWork.UserSubscriptionRepository.GetByIdAsync(payment.UserSubscriptionId.Value);
-                        if (subscription != null)
+                        if (!string.IsNullOrEmpty(promotionId) && int.TryParse(promotionId, out int promoId) && promoId > 0 &&
+                            !string.IsNullOrEmpty(promotionCount) && int.TryParse(promotionCount, out int promoCount) && promoCount > 0)
                         {
-                            subscription.IsActive = true;
-                            subscription.IsPaid = true;
-                            subscription.PaymentId = payment.Id;
-                            subscription.UserId = (Guid)payment.UserId;
-                            _unitOfWork.UserSubscriptionRepository.Update(subscription);
+                            // Check if user already has this promotion
+                            var userPromotions = await _unitOfWork.UserPromotionRepository.GetAllAsync();
+                            var existingPromotion = userPromotions.FirstOrDefault(up =>
+                                up.UserId.Equals(payment.UserId.Value) &&
+                                up.PromotionId == promoId);
+
+                            if (existingPromotion != null)
+                            {
+                                // Add to existing promotion count
+                                existingPromotion.PromotionCount += promoCount;
+                                existingPromotion.IsActive = true;
+                                _unitOfWork.UserPromotionRepository.Update(existingPromotion);
+                            }
+                            else
+                            {
+                                // Create new user promotion
+                                var userPromotion = new UserPromotion
+                                {
+                                    UserId = (Guid)payment.UserId,
+                                    PromotionId = promoId,
+                                    PromotionCount = promoCount,
+                                    IsActive = true,
+                                };
+                                await _unitOfWork.UserPromotionRepository.AddAsync(userPromotion);
+                            }
                         }
+
                     }
 
                     await _unitOfWork.CommitAsync();
