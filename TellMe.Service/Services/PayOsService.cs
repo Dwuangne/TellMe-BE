@@ -61,8 +61,11 @@ namespace TellMe.Service.Services
                         Amount = model.Amount,
                         AppointmentId = model.AppointmentId.HasValue ? model.AppointmentId : null,
                         UserSubscriptionId = model.UserSubscriptionId.HasValue ? model.UserSubscriptionId : null,
+                        SubscriptionPackageId = model.SubscriptionPackageId.HasValue ? model.SubscriptionPackageId : null,
                         PaymentMethod = model.PaymentMethod,
-                        Status = Repository.Enums.PaymentStatus.Pending
+                        Status = Repository.Enums.PaymentStatus.Pending,
+                        PromotionId = model.PromotionId > 0 ? model.PromotionId : null,
+                        PromotionCount = model.PromotionId > 0 ? model.PromotionCount : null
                     };
                     await _unitOfWork.PaymentRepository.AddAsync(payment);
                     await _unitOfWork.CommitAsync();

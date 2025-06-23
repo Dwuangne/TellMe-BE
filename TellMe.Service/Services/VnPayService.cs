@@ -76,6 +76,7 @@ namespace TellMe.Service.Services
                     Amount = model.Amount,
                     AppointmentId = model.AppointmentId.HasValue ? model.AppointmentId : null,
                     UserSubscriptionId = model.UserSubscriptionId.HasValue ? model.UserSubscriptionId : null,
+                    SubscriptionPackageId = model.SubscriptionPackageId.HasValue ? model.SubscriptionPackageId : null,
                     PaymentMethod = model.PaymentMethod,
                     Status = Repository.Enums.PaymentStatus.Pending,
                     PaymentDate = _timeHelper.NowVietnam()
