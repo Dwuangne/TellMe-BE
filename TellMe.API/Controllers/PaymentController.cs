@@ -18,8 +18,8 @@ namespace TellMe.API.Controllers
         private readonly IPaymentService _paymentService;
         private readonly IVnPayService _vnPayService;
         private readonly IPayOsService _payOsService;
-        private readonly string paymentSuccessUrl = "http://localhost:5173/payment/success";
-        private readonly string paymentFailUrl = "http://localhost:5173/payment/fail";
+        private readonly string paymentSuccessUrl = "http://fe.tellme.io.vn/payment/success";
+        private readonly string paymentFailUrl = "http://fe.tellme.io.vn/payment/fail";
 
         public PaymentController(IPaymentService paymentService, IVnPayService vnPayService, IPayOsService payOsService)
         {
