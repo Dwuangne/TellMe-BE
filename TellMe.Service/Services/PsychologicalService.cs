@@ -30,7 +30,7 @@ namespace TellMe.Service.Services
         {
             // Map request to entity
             var psychologistEntity = _mapper.Map<Psychologist>(request);
-            
+
             // Set default values
             psychologistEntity.IsVerified = false;
             psychologistEntity.CreatedAt = _timeHelper.NowVietnam();
@@ -83,7 +83,7 @@ namespace TellMe.Service.Services
             // Update the entity (soft delete could be implemented if IsDeleted exists on Psychologist)
             psychologist.UpdatedAt = _timeHelper.NowVietnam();
             _unitOfWork.PsychologistRepository.Update(psychologist);
-            
+
             await _unitOfWork.CommitAsync();
 
             return true;
@@ -206,6 +206,7 @@ namespace TellMe.Service.Services
                     existingEducation.EndDate = education.EndDate;
                     existingEducation.Description = education.Description;
                     existingEducation.CertificateFile = education.CertificateFile;
+                    existingEducation.IsDeleted = education.IsDeleted; // Add this line to handle deletion via update
                     existingEducation.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
@@ -247,6 +248,7 @@ namespace TellMe.Service.Services
                     existingExperience.EndDate = experience.EndDate;
                     existingExperience.IsCurrent = experience.IsCurrent;
                     existingExperience.Description = experience.Description;
+                    existingExperience.IsDeleted = experience.IsDeleted; // Add this line to handle deletion via update
                     existingExperience.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
@@ -288,6 +290,7 @@ namespace TellMe.Service.Services
                     existingLicense.IssueDate = license.IssueDate;
                     existingLicense.ExpiryDate = license.ExpiryDate;
                     existingLicense.DocumentPath = license.DocumentPath;
+                    existingLicense.IsDeleted = license.IsDeleted; // Add this line to handle deletion via update
                     existingLicense.UpdatedAt = _timeHelper.NowVietnam();
                 }
             }
@@ -323,4 +326,5 @@ namespace TellMe.Service.Services
             return _mapper.Map<PsychologistResponse>(existingPsychologist);
         }
     }
+
 }
