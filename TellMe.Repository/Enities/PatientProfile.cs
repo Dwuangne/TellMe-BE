@@ -35,6 +35,9 @@ namespace TellMe.Repository.Enities
         [MaxLength(100)] 
         public string? Occupation { get; set; } 
 
+        [MaxLength(500)]
+        public string? Address { get; set; }
+
         public bool IsActive { get; set; } = true;
     }
 }

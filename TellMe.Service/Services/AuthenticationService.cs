@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
 using System.Text;
 using TellMe.Repository.Enities;
+using TellMe.Repository.Infrastructures;
 using TellMe.Repository.Redis.Models;
 using TellMe.Service.Constants;
 using TellMe.Service.Exceptions;
@@ -16,18 +17,20 @@ namespace TellMe.Service.Services
     public class AuthenticationService : IAuthenticationService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly IRedisService _redisService;
         private readonly ITimeHelper _timeHelper;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService tokenService, IEmailService emailService, IRedisService redisService, ITimeHelper timeHelper)
+        public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService tokenService, IEmailService emailService, IRedisService redisService, ITimeHelper timeHelper, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _emailService = emailService;
             _redisService = redisService;
             _timeHelper = timeHelper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> ConfirmEmailAsync(string userId, string token)
@@ -74,6 +77,26 @@ namespace TellMe.Service.Services
                         throw new Exception(errors);
                     }
 
+                    var userForPatientProfile = await _userManager.FindByIdAsync(userId);
+                    if (userForPatientProfile == null)
+                    {
+                        throw new NotFoundException(MessageConstant.Account.UpdateProfile.UserNotFound);
+                    }
+
+                    // Create a new PatientProfile if it doesn't exist
+                    var existingProfile = await _unitOfWork.PatientProfileRepository.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userForPatientProfile.Id));
+                    if (existingProfile == null)
+                    {
+                        var newProfile = new PatientProfile
+                        {
+                            UserId = Guid.Parse(userForPatientProfile.Id),
+                            Name = userForPatientProfile.FullName,
+                            Email = userForPatientProfile.Email,
+                            IsActive = true,
+                        };
+                        await _unitOfWork.PatientProfileRepository.AddAsync(newProfile);
+                        await _unitOfWork.CommitAsync();
+                    }
                     return true;
                 }
 

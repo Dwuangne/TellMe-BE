@@ -27,5 +27,8 @@ namespace TellMe.Service.Models.RequestModels
 
         [MaxLength(100, ErrorMessage = "Occupation cannot exceed 100 characters.")]
         public string? Occupation { get; set; }
+
+        [MaxLength(500, ErrorMessage = "Address cannot exceed 500 characters.")]
+        public string? Address { get; set; }
     }
 }

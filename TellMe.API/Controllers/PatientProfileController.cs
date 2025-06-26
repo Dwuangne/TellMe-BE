@@ -21,6 +21,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllPatientProfiles([FromQuery] Guid? userId = null)
         {
             try
@@ -78,6 +79,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> CreatePatientProfile([FromBody] CreatePatientProfileRequest request)
         {
             try
@@ -114,6 +116,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> UpdatePatientProfile(int id, [FromBody] UpdatePatientProfileRequest request)
         {
             try

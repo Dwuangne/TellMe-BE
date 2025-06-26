@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TellMe.Service.Models;
@@ -9,6 +10,7 @@ namespace TellMe.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PsychologicalAssessmentController : ControllerBase
     {
         private readonly IPsychologicalAssessmentService _psychologicalAssessmentService;
@@ -19,6 +21,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllAssessments([FromQuery] Guid? userId = null, [FromQuery] Guid? expertId = null)
         {
             try
@@ -67,6 +70,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin, Psychologist")]
         public async Task<IActionResult> GetAssessment(int id)
         {
             try
@@ -102,6 +106,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Psychologist")]
         public async Task<IActionResult> CreateAssessment([FromBody] CreatePsychologicalAssessmentRequest request)
         {
             try
@@ -139,6 +144,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin, Psychologist")]
         public async Task<IActionResult> UpdateAssessment(int id, [FromBody] UpdatePsychologicalAssessmentRequest request)
         {
             try
@@ -184,6 +190,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpPut("{id:int}/status")]
+        [Authorize(Roles = "Admin")]
         public IActionResult ManageAssessmentStatus(int id, [FromQuery] bool isActive = false)
         {
             try
