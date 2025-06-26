@@ -32,6 +32,10 @@ namespace TellMe.Repository.DBContexts
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<UserPromotion> UserPromotions { get; set; }
 
+        public DbSet<PatientProfile> PatientProfiles { get; set; }
+
+        public DbSet<PsychologicalAssessment> PsychologicalAssessments { get; set; }
+
         public TellMeDBContext()
         {
         }

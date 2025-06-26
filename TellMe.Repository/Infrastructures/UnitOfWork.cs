@@ -33,6 +33,8 @@ namespace TellMe.Repository.Infrastructures
         private IGenericRepository<Participant> _participantRepository;
         private IGenericRepository<Promotion> _promotionRepository;
         private IGenericRepository<UserPromotion> _userPromotionRepository;
+        private IGenericRepository<PatientProfile> _patientProfileRepository;
+        private IGenericRepository<PsychologicalAssessment> _psychologicalAssessmentRepository;
 
         public UnitOfWork(TellMeDBContext dbContext, TellMeAuthDBContext dbAuthContext) 
         {
@@ -95,6 +97,12 @@ namespace TellMe.Repository.Infrastructures
 
         public IGenericRepository<UserPromotion> UserPromotionRepository =>
             _userPromotionRepository ??= new GenericRepository<UserPromotion>(_dbContext);
+
+        public IGenericRepository<PatientProfile> PatientProfileRepository =>
+            _patientProfileRepository ??= new GenericRepository<PatientProfile>(_dbContext);
+
+        public IGenericRepository<PsychologicalAssessment> PsychologicalAssessmentRepository =>
+            _psychologicalAssessmentRepository ??= new GenericRepository<PsychologicalAssessment>(_dbContext);
 
         public void Commit()
         {

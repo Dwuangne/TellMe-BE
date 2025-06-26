@@ -30,6 +30,8 @@ namespace TellMe.Repository.Infrastructures
         IGenericRepository<Participant> ParticipantRepository { get; }
         IGenericRepository<Promotion> PromotionRepository { get; }
         IGenericRepository<UserPromotion> UserPromotionRepository { get; }
+        IGenericRepository<PatientProfile> PatientProfileRepository { get; }
+        IGenericRepository<PsychologicalAssessment> PsychologicalAssessmentRepository { get; }
 
         void Commit();
         Task CommitAsync();
