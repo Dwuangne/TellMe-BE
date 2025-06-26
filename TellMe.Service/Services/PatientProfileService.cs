@@ -30,13 +30,24 @@ namespace TellMe.Service.Services
 
         public async Task<PatientProfile> CreatePatientProfileAsync(CreatePatientProfileRequest request)
         {
-            var patientProfile = _mapper.Map<PatientProfile>(request);
-            patientProfile.IsActive = true;
+            try
+            {
+                var patientProfile = _mapper.Map<PatientProfile>(request);
+                patientProfile.IsActive = true;
 
-            await _unitOfWork.PatientProfileRepository.AddAsync(patientProfile);
-            await _unitOfWork.CommitAsync();
+                await _unitOfWork.PatientProfileRepository.AddAsync(patientProfile);
+                await _unitOfWork.CommitAsync();
 
-            return patientProfile;
+                return patientProfile;
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new InvalidOperationException($"Error mapping patient profile data: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to create patient profile: {ex.Message}", ex);
+            }
         }
 
         public async Task<List<PatientProfile>> GetAllActivePatientProfilesAsync(Guid? userId = null)
@@ -44,6 +55,38 @@ namespace TellMe.Service.Services
             var profiles = await _unitOfWork.PatientProfileRepository.GetAsync(
                 filter: p => p.IsActive &&
                             (userId == null || p.UserId == userId.Value));
+
+            var response = new List<PatientProfile>();
+            foreach (var profile in profiles.Items)
+            {
+                response.Add(profile);
+            }
+
+            return response;
+        }
+
+        public async Task<List<PatientProfile>> GetAllActivePatientProfilesAsyncForExpert(Guid? expertId = null)
+        {
+            if (expertId == null)
+            {
+                return new List<PatientProfile>();
+            }
+
+            // Get all active appointments for this expert
+            var appointments = await _unitOfWork.AppointmentRepository.GetAsync(
+                filter: a => a.ExpertId == expertId.Value && a.IsActive && a.UserId != null);
+
+            // Extract unique user IDs from the appointments
+            var userIds = appointments.Items.Select(a => a.UserId.Value).Distinct().ToList();
+
+            if (!userIds.Any())
+            {
+                return new List<PatientProfile>();
+            }
+
+            // Get all active patient profiles for these users
+            var profiles = await _unitOfWork.PatientProfileRepository.GetAsync(
+                filter: p => p.IsActive && userIds.Contains(p.UserId));
 
             var response = new List<PatientProfile>();
             foreach (var profile in profiles.Items)

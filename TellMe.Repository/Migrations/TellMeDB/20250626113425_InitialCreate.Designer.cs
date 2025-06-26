@@ -12,7 +12,7 @@ using TellMe.Repository.DBContexts;
 namespace TellMe.Repository.Migrations.TellMeDB
 {
     [DbContext(typeof(TellMeDBContext))]
-    [Migration("20250626044016_InitialCreate")]
+    [Migration("20250626113425_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -188,6 +188,10 @@ namespace TellMe.Repository.Migrations.TellMeDB
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
