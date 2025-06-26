@@ -45,6 +45,31 @@ namespace TellMe.API.Controllers
             }
         }
 
+        [HttpGet("expert")]
+        [Authorize(Roles = "Admin, Expert")]
+        public async Task<IActionResult> GetAllPatientProfilesForExpert([FromQuery] Guid? expertId = null)
+        {
+            try
+            {
+                var profiles = await _patientProfileService.GetAllActivePatientProfilesAsyncForExpert(expertId);
+                return Ok(new ResponseObject
+                {
+                    Status = HttpStatusCode.OK,
+                    Message = "Patient profiles for expert retrieved successfully",
+                    Data = profiles
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseObject
+                {
+                    Status = HttpStatusCode.InternalServerError,
+                    Message = "Error retrieving patient profiles for expert",
+                    Data = ex.Message
+                });
+            }
+        }
+
         [HttpGet("{userId:guid}")]
         public async Task<IActionResult> GetPatientProfile(Guid userId)
         {

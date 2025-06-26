@@ -13,6 +13,7 @@ namespace TellMe.Service.Services.Interface
     {
         public Task<List<PatientProfile>> GetAllPatientProfilesAsync(Guid? userId = null);
         public Task<List<PatientProfile>> GetAllActivePatientProfilesAsync(Guid? userId = null);
+        public Task<List<PatientProfile>> GetAllActivePatientProfilesAsyncForExpert(Guid? expertId = null);
         public Task<PatientProfile> GetPatientProfileAsync(Guid userId);
         public Task<PatientProfile> CreatePatientProfileAsync(CreatePatientProfileRequest patientProfile);
         public Task<PatientProfile> UpdatePatientProfileAsync(int id, UpdatePatientProfileRequest patientProfile);
