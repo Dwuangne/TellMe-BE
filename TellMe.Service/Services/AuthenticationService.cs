@@ -83,26 +83,29 @@ namespace TellMe.Service.Services
                         throw new NotFoundException(MessageConstant.Account.UpdateProfile.UserNotFound);
                     }
 
-                    // Create a new PatientProfile if it doesn't exist
-                    var existingProfile = await _unitOfWork.PatientProfileRepository.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userForPatientProfile.Id));
-                    if (existingProfile == null)
+                    if (await _userManager.IsInRoleAsync(userForPatientProfile, "User"))
                     {
-                        var newProfile = new PatientProfile
+                        // Create a new PatientProfile if it doesn't exist
+                        var existingProfile = await _unitOfWork.PatientProfileRepository.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userForPatientProfile.Id));
+                        if (existingProfile == null)
                         {
-                            UserId = Guid.Parse(userForPatientProfile.Id),
-                            Name = userForPatientProfile.FullName,
-                            Email = userForPatientProfile.Email,
-                            IsActive = true,
-                        };
-                        await _unitOfWork.PatientProfileRepository.AddAsync(newProfile);
-                        await _unitOfWork.CommitAsync();
+                            var newProfile = new PatientProfile
+                            {
+                                UserId = Guid.Parse(userForPatientProfile.Id),
+                                Name = userForPatientProfile.FullName,
+                                Email = userForPatientProfile.Email,
+                                IsActive = true,
+                            };
+                            await _unitOfWork.PatientProfileRepository.AddAsync(newProfile);
+                            await _unitOfWork.CommitAsync();
+                        }
                     }
                     return true;
                 }
 
                 return false;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -116,13 +119,16 @@ namespace TellMe.Service.Services
                 if (user == null)
                 {
                     throw new NotFoundException(MessageConstant.Authentication.Login.EmailNotFound);
-                } else if (!await _userManager.IsEmailConfirmedAsync(user))
+                }
+                else if (!await _userManager.IsEmailConfirmedAsync(user))
                 {
                     throw new BadRequestException(MessageConstant.Authentication.Login.EmailNotVerified);
-                }else if (user.LockoutEnabled)
+                }
+                else if (user.LockoutEnabled)
                 {
                     throw new BadRequestException(MessageConstant.Authentication.Login.AccountDisabled);
-                }else if (!await _userManager.CheckPasswordAsync(user, loginRequest.Password))
+                }
+                else if (!await _userManager.CheckPasswordAsync(user, loginRequest.Password))
                 {
                     throw new BadRequestException(MessageConstant.Authentication.Login.InvalidCredentials);
                 }
@@ -144,7 +150,7 @@ namespace TellMe.Service.Services
                 var accountToken = new AccountToken
                 {
                     AccountId = user.Id,
-                    JWTId = jwtId, 
+                    JWTId = jwtId,
                     RefreshToken = refreshToken,
                 };
 
