@@ -25,6 +25,26 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 });
 
             migrationBuilder.CreateTable(
+                name: "PatientProfiles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Occupation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PatientProfiles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Promotions",
                 columns: table => new
                 {
@@ -40,6 +60,27 @@ namespace TellMe.Repository.Migrations.TellMeDB
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Promotions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PsychologicalAssessments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExpertId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ConversationTopicInformation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Recommendations = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConversationOverview = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AssessmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EditDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PsychologicalAssessments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -577,6 +618,12 @@ namespace TellMe.Repository.Migrations.TellMeDB
 
             migrationBuilder.DropTable(
                 name: "Participant");
+
+            migrationBuilder.DropTable(
+                name: "PatientProfiles");
+
+            migrationBuilder.DropTable(
+                name: "PsychologicalAssessments");
 
             migrationBuilder.DropTable(
                 name: "PsychologistEducations");

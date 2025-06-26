@@ -126,6 +126,8 @@ namespace TellMe.API.Extensions
             services.AddScoped<IVnPayService, VnPayService>();
             services.AddScoped<IPromotionService, PromotionService>();
             services.AddScoped<IUserPromotionService, UserPromotionService>();
+            services.AddScoped<IPatientProfileService, PatientProfileService>();
+            services.AddScoped<IPsychologicalAssessmentService, PsychologicalAssessmentService>();
 
             // Chat Services
             services.AddScoped<IConversationService, ConversationService>();
