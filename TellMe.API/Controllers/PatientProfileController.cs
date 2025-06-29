@@ -46,7 +46,7 @@ namespace TellMe.API.Controllers
         }
 
         [HttpGet("expert")]
-        [Authorize(Roles = "Admin, Expert")]
+        [Authorize(Roles = "Admin, Psychologist")]
         public async Task<IActionResult> GetAllPatientProfilesForExpert([FromQuery] Guid? expertId = null)
         {
             try
